@@ -10,7 +10,9 @@
 ## 使用例
 データ形式とかは下の方を参照
 
-```C:
+
+```
+#!C
 #include "Maze.h"
 #include "Agent.h"
 #include "mazeData.h"
@@ -109,7 +111,8 @@ int main()
 #### 定数
 よく使いそうなものは定数として定義済み
 
-```C:
+```
+#!C
 const uint8_t NORTH = 0x01;
 const uint8_t EAST = 0x02;
 const uint8_t SOUTH = 0x04;
@@ -121,7 +124,8 @@ const uint8_t DONE_WEST = 0x80;
 ```
 
 ### 使用例
-```C:
+```
+#!C
 //インスタンス化
 Direction dir; 		//全てのbitは0で初期化される
 Direction dir2(0xFA); //0xFAで初期化される
@@ -156,7 +160,8 @@ dir.nDoneWall(); //探索済みbitの1になっているbit数を返す
 IndexVecDir[i]はi=0,1,2,3 の順に北東南西の時計回りにベクトルを返す。
 4近傍を調べるときに便利
 
-```C:
+```
+#!C
 const IndexVec IndexVec::vecNorth(0,1);
 const IndexVec IndexVec::vecEast(1,0);
 const IndexVec IndexVec::vecSouth(0,-1);
@@ -166,7 +171,8 @@ const IndexVec IndexVec::vecDir[4] = {IndexVec::vecNorth, IndexVec::vecEast, Ind
 
 ### 使用例
 
-```C:
+```
+#!C
 //インスタンス化
 IndexVec vec1; //x=0,y=0で初期化される
 IndexVec vec2(1,2); //x=1,y=2で初期化される
@@ -183,7 +189,8 @@ if (vec1 == vec2) {...} //x,y両方の値が等しい時にtrue
 if (vec1 |= vec2) {...} //上の否定
 
 //範囲内に収まるかのチェック
-if ( (vec1+vec2).canSum() ) {...} //vec1とvec2を足した結果が迷路の座標の範囲内(0~15)に収まっているかどうか
+//vec1とvec2を足した結果が迷路の座標の範囲内(0~15)に収まっているかどうか
+if ( (vec1+vec2).canSum() ) {...}
 ```
 
 ## Operation (ShortestPath.h)
@@ -248,7 +255,8 @@ getState()で取得できる
 * 原点は左下、x正方向は右(西)、y正方向が上(北)
 
 ### 使い方
-```C:
+```
+#!C
 //インスタンス化
 Maze maze; //壁情報(Direction)は全て0で初期化
 Maze maze2(maze); //複製
@@ -320,4 +328,3 @@ k最短経路にかかる時間+少し(数ms)
 ## 開発環境
 Linux gcc 5.2.0
 コンパイルオプション -g -O0 -std=c++11
-
