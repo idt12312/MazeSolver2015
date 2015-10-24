@@ -24,6 +24,7 @@ Agent agent(maze);
 
 int main()
 {
+	
     //探索
 	while(1) {
     	//1区画進んで壁の状態が分かるまで待機
@@ -72,7 +73,7 @@ int main()
     }
     
     //おわり
-   
+    
     return 0;
 }
 ```
@@ -144,7 +145,6 @@ f(dir[0])		//0bit目(North)を読み取る
 dir.nWall(); //壁bitの1になっているbit数を返す
 dir.nDoneWall(); //探索済みbitの1になっているbit数を返す
 ```
-
 ## IndexVec (Maze.h)
 * 迷路上のx,y座標を扱う2次元ベクトル
 * 中身はint8_tのxとyをメンバに持つ構造体
@@ -185,7 +185,6 @@ if (vec1 |= vec2) {...} //上の否定
 //範囲内に収まるかのチェック
 if ( (vec1+vec2).canSum() ) {...} //vec1とvec2を足した結果が迷路の座標の範囲内(0~15)に収まっているかどうか
 ```
-
 
 ## Operation (ShortestPath.h)
 * 経路上を走るためのコマンドのようなもの
