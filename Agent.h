@@ -42,10 +42,10 @@ private:
 public:
 	Agent(Maze &_maze) :maze(&_maze), state(Agent::IDLE), path(_maze)
 	{
-		mazeGoalList.push_back(IndexVec(7,7));
-		mazeGoalList.push_back(IndexVec(7,8));
-		mazeGoalList.push_back(IndexVec(8,7));
-		mazeGoalList.push_back(IndexVec(8,8));
+		mazeGoalList.push_back(MAZE_GOAL1);
+		mazeGoalList.push_back(MAZE_GOAL2);
+		mazeGoalList.push_back(MAZE_GOAL3);
+		mazeGoalList.push_back(MAZE_GOAL4);
 	}
 
 	//状態を更新する

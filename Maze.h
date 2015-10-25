@@ -5,9 +5,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
-//TODO:もっといい感じに設定できるようにする　ゴールも
-#define N 16
-
+#include "MazeSolver_conf.h"
 
 
 /*	壁の情報・ロボットがどちらに進むかの方向などを表現するのに使う
@@ -84,17 +82,17 @@ struct __attribute__ ((__packed__)) IndexVec {
 	inline bool canSum(const IndexVec &obj) const
 	{
 		const int8_t res_x = x + obj.x;
-		if (res_x<0 || N<=res_x) return false;
+		if (res_x<0 || MAZE_SIZE<=res_x) return false;
 		const int8_t res_y = y + obj.y;
-		if (res_y<0 || N<=res_y) return false;
+		if (res_y<0 || MAZE_SIZE<=res_y) return false;
 		return true;
 	}
 	inline bool canSub(const IndexVec &obj) const
 	{
 		const int8_t res_x = x - obj.x;
-		if (res_x<0 || N<=res_x) return false;
+		if (res_x<0 || MAZE_SIZE<=res_x) return false;
 		const int8_t res_y = y - obj.y;
-		if (res_y<0 || N<=res_y) return false;
+		if (res_y<0 || MAZE_SIZE<=res_y) return false;
 		return true;
 	}
 	inline uint norm() const
@@ -103,7 +101,7 @@ struct __attribute__ ((__packed__)) IndexVec {
 		const int8_t y_abs = y>0?y:-y;
 		return x_abs + y_abs;
 	}
-	inline bool isCorner(){ return x == N-1 || x == 0 || y == N-1 || y == 0; }
+	inline bool isCorner(){ return x == MAZE_SIZE-1 || x == 0 || y == MAZE_SIZE-1 || y == 0; }
 
 	//各方角を表すベクトル
 	static const IndexVec vecNorth;
@@ -121,13 +119,13 @@ struct Maze {
 private:
 
 public:
-	Direction wall[N][N];
-	uint8_t stepMap[N][N];
+	Direction wall[MAZE_SIZE][MAZE_SIZE];
+	uint8_t stepMap[MAZE_SIZE][MAZE_SIZE];
 	Maze();
 	Maze(const Maze &obj)
 	{
-		for (int i=0;i<N;i++) {
-			for (int j=0;j<N;j++) {
+		for (int i=0;i<MAZE_SIZE;i++) {
+			for (int j=0;j<MAZE_SIZE;j++) {
 				wall[i][j] = obj.wall[i][j];
 			}
 		}
@@ -138,10 +136,10 @@ public:
 	//Maze.wallは上下が逆転しているから注意
 	//file[i][j] = ascii[i][j] = wall[N-1-i][j]
 	bool loadFromFile(const char *_filename);
-	void loadFromArray(const char asciiData[N+1][N+1]);
+	void loadFromArray(const char asciiData[MAZE_SIZE+1][MAZE_SIZE+1]);
 
-	void printWall(const uint8_t value[N][N] = NULL) const;
-	void printWall(const bool value[N][N]) const;
+	void printWall(const uint8_t value[MAZE_SIZE][MAZE_SIZE] = NULL) const;
+	void printWall(const bool value[MAZE_SIZE][MAZE_SIZE]) const;
 	void printStepMap() const;
 
 	void updateWall(const IndexVec &cur, const Direction &newState, bool forceSetDone = true);

@@ -1,6 +1,6 @@
 #include "Maze.h"
 
-extern const char mazeData_maze2011exp[N+1][N+1] = {
+extern const char mazeData_maze2011exp[16+1][16+1] = {
 		{"9555551155511113"},
 		{"839157a8393eeaaa"},
 		{"aaac53828681502a"},
@@ -19,7 +19,7 @@ extern const char mazeData_maze2011exp[N+1][N+1] = {
 		{"ec55444454544547"},
 };
 
-extern const char mazeData_maze2011fr[N+1][N+1] = {
+extern const char mazeData_maze2011fr[16+1][16+1] = {
 		{"9555155511515153"},
 		{"abd3a953aabafc3a"},
 		{"aad6aabaaae853aa"},
@@ -37,7 +37,7 @@ extern const char mazeData_maze2011fr[N+1][N+1] = {
 		{"aac2a956aaeaf96a"},
 };
 
-extern const char mazeData_maze2012exp[N+1][N+1] = {
+extern const char mazeData_maze2012exp[16+1][16+1] = {
 		{"9395551555539393"},
 		{"aaa939695556aaaa"},
 		{"ac6a847c5553ac6a"},
@@ -56,7 +56,7 @@ extern const char mazeData_maze2012exp[N+1][N+1] = {
 		{"ec6c455555555556"},
 };
 
-extern const char mazeData_maze2013exp[N+1][N+1] = {
+extern const char mazeData_maze2013exp[16+1][16+1] = {
 		{"9795555555551393"},
 		{"856915555553eaaa"},
 		{"8796a95153d43c6a"},
@@ -75,7 +75,7 @@ extern const char mazeData_maze2013exp[N+1][N+1] = {
 		{"ec44555555555456"},
 };
 
-extern const char mazeData_maze2013fr[N+1][N+1] = {
+extern const char mazeData_maze2013fr[16+1][16+1] = {
 		{"9115151553ff9113"},
 		{"aaafafaf94556aaa"},
 		{"a8696fafa95556aa"},
@@ -94,7 +94,7 @@ extern const char mazeData_maze2013fr[N+1][N+1] = {
 		{"efc5456ffc545456"},
 };
 
-extern const char mazeData_maze2013taiwan[N+1][N+1] = {
+extern const char mazeData_maze2013taiwan[16+1][16+1] = {
 		{"93b9113b93b93b93"},
 		{"a802aa82a82aa82a"},
 		{"aeec446c6ec6c6ea"},
@@ -112,7 +112,7 @@ extern const char mazeData_maze2013taiwan[N+1][N+1] = {
 		{"829169696969696a"},
 };
 
-extern const char mazeData_maze2[N+1][N+1] = {
+extern const char mazeData_maze2[16+1][16+1] = {
 		{"9551553ff9551553"},
 		{"af92ffc556ffaffa"},
 		{"a96aff939553affa"},
@@ -131,7 +131,7 @@ extern const char mazeData_maze2[N+1][N+1] = {
 		{"eec55456fc554556"},
 };
 
-extern const char mazeData_maze3[N+1][N+1] = {
+extern const char mazeData_maze3[16+1][16+1] = {
 		{"d5553fffffffffff"},
 		{"d5116fff93ffffff"},
 		{"ffe815556affffff"},
@@ -150,7 +150,7 @@ extern const char mazeData_maze3[N+1][N+1] = {
 		{"efffeffffffffffe"},
 };
 
-extern const char mazeData_maze4[N+1][N+1] = {
+extern const char mazeData_maze4[16+1][16+1] = {
 		{"d51157f9515557d3"},
 		{"97ac5552fc55153a"},
 		{"afaff97ad153afaa"},
@@ -169,7 +169,7 @@ extern const char mazeData_maze4[N+1][N+1] = {
 		{"ec6c6feeffc55556"},
 };
 
-extern const char mazeData_maze5[N+1][N+1] = {
+extern const char mazeData_maze5[16+1][16+1] = {
 		{"f93f953bfd397d53"},
 		{"d46b852ed146fbbe"},
 		{"f93c4507babbd02b"},
@@ -188,7 +188,7 @@ extern const char mazeData_maze5[N+1][N+1] = {
 		{"efed6feeec55546f"},
 };
 
-extern const char mazeData_maze[N+1][N+1] = {
+extern const char mazeData_maze[16+1][16+1] = {
 		{"9551553ff9551553"},
 		{"af92ffc556ffaffa"},
 		{"a96aff939553affa"},

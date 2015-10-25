@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <algorithm>
+
+#include "MazeSolver_conf.h"
 #include "Agent.h"
 
-#define SEARCH_DEPTH 1
 
 void Agent::reset()
 {
@@ -97,7 +98,7 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 		//TODO:到達不可能な壁が連続で出てくる可能性 詰みマスに囲まれた場合はどうなるのだろう
 		if (dist == cur || calcNextDirection(cur, dist) == 0) {
 			distIndexList.clear();
-			path.calcKShortestDistancePath(IndexVec(0,0), mazeGoalList,SEARCH_DEPTH, false);
+			path.calcKShortestDistancePath(IndexVec(0,0), mazeGoalList,SEARCH_DEPTH1, false);
 			path.calcNeedToSearchWallIndex();
 			distIndexList.assign(path.getNeedToSearchIndex().begin(), path.getNeedToSearchIndex().end());
 			if (distIndexList.empty()) {
@@ -130,7 +131,7 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 			nextDir = 0;
 
 			//最終的に走る最短経路を計算
-			path.calcShortestTimePath(IndexVec(0,0), mazeGoalList, 20, true);
+			path.calcShortestTimePath(IndexVec(0,0), mazeGoalList, SEARCH_DEPTH2, true);
 			return;
 		}
 		nextDir = calcNextDirection(cur, dist);

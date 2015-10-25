@@ -46,7 +46,7 @@ public:
 private:
 
 	Maze *maze;
-	Node node[N][N];
+	Node node[MAZE_SIZE][MAZE_SIZE];
 	Path shortestDistancePath;
 	std::vector< Path > k_shortestDistancePath;
 	int shortestTimePath_index;

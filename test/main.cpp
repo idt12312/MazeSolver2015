@@ -5,10 +5,11 @@
 #include <vector>
 #include <unistd.h>
 
-#include "../Maze.h"
-#include "../mazeData.h"
-#include "../ShortestPath.h"
-#include "../Agent.h"
+#include "MazeSolver_conf.h"
+#include "Maze.h"
+#include "mazeData.h"
+#include "ShortestPath.h"
+#include "Agent.h"
 
 
 void test_Size()
@@ -37,13 +38,13 @@ void test_ShortestPath(const char *filename)
 	//field.loadFromArray(mazeData_maze);
 
 	ShortestPath path(field);
-	std::list<IndexVec> lll;
-	lll.push_back(IndexVec(7,7));
-	lll.push_back(IndexVec(7,8));
-	lll.push_back(IndexVec(8,7));
-	lll.push_back(IndexVec(8,8));
-	path.calcShortestDistancePath(IndexVec(0,0),lll,false);
-	bool route[N][N] = {false};
+	std::list<IndexVec> goalList;
+	goalList.push_back(MAZE_GOAL1);
+	goalList.push_back(MAZE_GOAL2);
+	goalList.push_back(MAZE_GOAL3);
+	goalList.push_back(MAZE_GOAL4);
+	path.calcShortestDistancePath(IndexVec(0,0),goalList,false);
+	bool route[MAZE_SIZE][MAZE_SIZE] = {false};
 	for (auto index : path.getShortestDistancePath())
 	{
 		route[index.y][index.x] = true;
@@ -59,15 +60,15 @@ void test_KShortestPath(const char *filename)
 
 	ShortestPath path(field);
 	std::list<IndexVec> goalList;
-	goalList.push_back(IndexVec(7,7));
-	goalList.push_back(IndexVec(7,8));
-	goalList.push_back(IndexVec(8,7));
-	goalList.push_back(IndexVec(8,8));
+	goalList.push_back(MAZE_GOAL1);
+	goalList.push_back(MAZE_GOAL2);
+	goalList.push_back(MAZE_GOAL3);
+	goalList.push_back(MAZE_GOAL4);
 	path.calcKShortestDistancePath(IndexVec(0,0), goalList, 20, false);
 
 	for (auto &p : path.getKShortestDistancePath()) {
 		printf("length %lu\n", p.size());
-		bool route[N][N] = {false};
+		bool route[MAZE_SIZE][MAZE_SIZE] = {false};
 		for (auto &index : p) {
 			route[index.y][index.x] = true;
 		}
@@ -84,15 +85,15 @@ void test_ShortestPathInTime(const char *filename)
 
 	ShortestPath path(field);
 	std::list<IndexVec> goalList;
-	goalList.push_back(IndexVec(7,7));
-	goalList.push_back(IndexVec(7,8));
-	goalList.push_back(IndexVec(8,7));
-	goalList.push_back(IndexVec(8,8));
-	path.calcShortestTimePath(IndexVec(0,0),goalList, 10, false);
+	goalList.push_back(MAZE_GOAL1);
+	goalList.push_back(MAZE_GOAL2);
+	goalList.push_back(MAZE_GOAL3);
+	goalList.push_back(MAZE_GOAL4);
+	path.calcShortestTimePath(IndexVec(0,0), goalList, 10, false);
 
 	auto &p = path.getShortestTimePath();
 	printf("length %lu\n", p.size());
-	bool route[N][N] = {false};
+	bool route[MAZE_SIZE][MAZE_SIZE] = {false};
 	for (auto &index : p) {
 		route[index.y][index.x] = true;
 	}
@@ -110,7 +111,7 @@ void test_Agent(const char *filename)
 
 	IndexVec cur(0,0);
 	while(1) {
-		bool pos[N][N] = {false};
+		bool pos[MAZE_SIZE][MAZE_SIZE] = {false};
 		pos[cur.y][cur.x] = true;
 		mazeInRobot.printWall(pos);
 
@@ -124,7 +125,7 @@ void test_Agent(const char *filename)
 		usleep(1000000/20);
 	}
 
-	bool route[N][N] = {false};
+	bool route[MAZE_SIZE][MAZE_SIZE] = {false};
 	for (auto &index : agent.getShortestPath()) {
 		route[index.y][index.x] = true;
 	}

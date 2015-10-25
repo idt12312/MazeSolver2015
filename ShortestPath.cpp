@@ -4,6 +4,7 @@
 #include <queue>
 #include <algorithm>
 
+#include "MazeSolver_conf.h"
 #include "ShortestPath.h"
 
 int ShortestPath::calcShortestDistancePath(const IndexVec &start, const IndexVec &goal, bool onlyUseFoundWall)
@@ -16,8 +17,8 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const IndexVec
 //Dijkstra's algorithm
 int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::list<IndexVec> &goalList, bool onlyUseFoundWall)
 {
-	for (int i=0;i<N;i++) {
-		for (int j=0;j<N;j++) {
+	for (int i=0;i<MAZE_SIZE;i++) {
+		for (int j=0;j<MAZE_SIZE;j++) {
 			node[i][j].index.x = j;
 			node[i][j].index.y = i;
 			node[i][j].from = 0;
