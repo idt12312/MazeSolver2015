@@ -16,7 +16,6 @@ void test_Size()
 {
 	printf("%lu \n", sizeof(Direction)); //1
 	printf("%lu \n", sizeof(Maze)); //512
-	printf("%lu \n", sizeof(ShortestPath::Node)); //4
 	printf("%lu \n", sizeof(ShortestPath)); //1112
 	printf("%lu \n", sizeof(Path)); //24
 	printf("%lu \n", sizeof(std::vector<Path>)); //24
@@ -117,7 +116,7 @@ void test_Agent(const char *filename)
 		pos[cur.y][cur.x] = true;
 		mazeInRobot.printWall(pos);
 
-		agent.update(cur, field.wall[cur.y][cur.x]);
+		agent.update(cur, field.getWall(cur));
 		if (agent.getState() == Agent::FINISHED) break;
 
 		Direction dir = agent.getNextDirection();
@@ -144,9 +143,9 @@ int main(int argc, char **argv)
 	}
 
 	//test_Size();
-	//test_Agent(argv[1]);
+	test_Agent(argv[1]);
 	//test_ShortestPath(argv[1]);
-	test_KShortestPath(argv[1]);
+	//test_KShortestPath(argv[1]);
 	//test_ShortestPathInTime(argv[1]);
 
 	printf("finish\n");

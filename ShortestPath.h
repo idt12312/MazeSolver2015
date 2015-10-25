@@ -30,7 +30,7 @@ struct Operation {
 };
 
 class ShortestPath {
-public:
+private:
 	//Dijkstraで計算するときに使う
 	struct __attribute__ ((__packed__)) Node {
 		IndexVec index;
@@ -42,8 +42,6 @@ public:
 			{ return lhs->minCost < rhs->minCost; }
 		};
 	};
-
-private:
 
 	Maze *maze;
 	Node node[MAZE_SIZE][MAZE_SIZE];

@@ -15,21 +15,21 @@ void Agent::reset()
 Direction Agent::calcNextDirection(const IndexVec &cur, const IndexVec &_dist)
 {
 	maze->updateStepMap(_dist);
-	const uint8_t curStep = maze->stepMap[cur.y][cur.x];
+	const uint8_t curStep = maze->getStepMap(cur);
 	if (curStep == 255) return Direction(0);
 
 	Direction result(0);
 	int nFoundWall = 10;
-	const Direction cur_wall = maze->wall[cur.y][cur.x];
+	const Direction cur_wall = maze->getWall(cur);
 	for (int i=0;i<4;i++) {
 		if (cur.canSum(IndexVec::vecDir[i])) {
 			IndexVec neighbor(cur + IndexVec::vecDir[i]);
-			if (!cur_wall[i] && maze->stepMap[neighbor.y][neighbor.x] < curStep ) {
+			if (!cur_wall[i] && maze->getStepMap(neighbor) < curStep ) {
 				//北優先
 				//return Direction(NORTH << i);
 				//未探索の壁優先
-				if (nFoundWall > maze->wall[neighbor.y][neighbor.x].nDoneWall()) {
-					nFoundWall = maze->wall[neighbor.y][neighbor.x].nDoneWall();
+				if (nFoundWall > maze->getWall(neighbor).nDoneWall()) {
+					nFoundWall = maze->getWall(neighbor).nDoneWall();
 					result = Direction(NORTH << i);
 				}
 			}
@@ -40,12 +40,12 @@ Direction Agent::calcNextDirection(const IndexVec &cur, const IndexVec &_dist)
 	for (int i=0;i<4;i++) {
 		if (cur.canSum(IndexVec::vecDir[i])) {
 			IndexVec neighbor(cur + IndexVec::vecDir[i]);
-			if (!cur_wall[i] && maze->stepMap[neighbor.y][neighbor.x] == curStep ) {
+			if (!cur_wall[i] && maze->getStepMap(neighbor) == curStep ) {
 				//北優先
 				//return Direction(NORTH << i);
 				//未探索壁優先
-				if (nFoundWall > maze->wall[neighbor.y][neighbor.x].nDoneWall()) {
-					nFoundWall = maze->wall[neighbor.y][neighbor.x].nDoneWall();
+				if (nFoundWall > maze->getWall(neighbor).nDoneWall()) {
+					nFoundWall = maze->getWall(neighbor).nDoneWall();
 					result = Direction(NORTH << i);
 				}
 			}
@@ -112,9 +112,9 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 				distIndexList.sort(
 						[&](const IndexVec& lhs, const IndexVec& rhs)
 						{
-					const unsigned curStep = maze->stepMap[cur.y][cur.x];
-					const unsigned lhsStep = maze->stepMap[lhs.y][lhs.x];
-					const unsigned rhsStep = maze->stepMap[rhs.y][rhs.x];
+					const unsigned curStep = maze->getStepMap(cur);
+					const unsigned lhsStep = maze->getStepMap(lhs);
+					const unsigned rhsStep = maze->getStepMap(rhs);
 					return (lhsStep - curStep) < (rhsStep - curStep);
 						}
 				);

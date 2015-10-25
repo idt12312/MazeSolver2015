@@ -47,9 +47,9 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 		for (int i=0;i<4;i++) {
 			const IndexVec cur = doneNode->index;
 			//壁がある
-			if (maze->wall[cur.y][cur.x][i]) continue;
+			if (maze->getWall(cur)[i]) continue;
 			//未探索の壁がある
-			if (onlyUseFoundWall && !maze->wall[cur.y][cur.x][i+4]) continue;
+			if (onlyUseFoundWall && !maze->getWall(cur)[i+4]) continue;
 
 			if (!cur.canSum(IndexVec::vecDir[i])) continue;
 			IndexVec toIndex(cur + IndexVec::vecDir[i]);
@@ -157,13 +157,13 @@ int ShortestPath::calcKShortestDistancePath(const IndexVec &start, const std::li
 			IndexVec &spurNode = k_shortestDistancePath[k-1][i];
 			IndexVec &spurGoal = k_shortestDistancePath[k-1].back();
 
-			if (maze->wall[spurNode.y][spurNode.x].nWall() > 1) continue;
+			if (maze->getWall(spurNode).nWall() > 1) continue;
 
 			Path rootPath(k_shortestDistancePath[k-1].begin(), k_shortestDistancePath[k-1].begin()+i+1);
 
 			for (const Path &p :k_shortestDistancePath) {
 				if (matchPath(p, rootPath, rootPath.size())) {
-					if (maze->wall[p[i].y][p[i].x].nWall() > 1) continue;
+					if (maze->getWall(p[i]).nWall() > 1) continue;
 					//i+1とiを結ぶノードを切断
 					removeEdge(p[i], p[i+1]);
 				}
@@ -340,7 +340,7 @@ void ShortestPath::calcNeedToSearchWallIndex()
 			IndexVec dxdy = path[i+1] - path[i];
 			for (int j=0;j<4;j++) {
 				if (dxdy == IndexVec::vecDir[j]) {
-					if (!maze->wall[path[i].y][path[i].x][j+4]) {
+					if (!maze->getWall(path[i])[j+4]) {
 						auto it = std::find(needToSearchWallIndex.begin(), needToSearchWallIndex.end(), path[i]);
 						if (it == needToSearchWallIndex.end()) {
 							needToSearchWallIndex.push_back(path[i]);

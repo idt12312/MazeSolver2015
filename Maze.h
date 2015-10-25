@@ -34,8 +34,8 @@ public:
 	inline uint8_t operator&=(uint8_t value) { return byte &= value; }
 	inline uint8_t operator=(Direction &obj) { return byte = obj.byte; }
 	inline uint8_t operator[](uint8_t index) const {return (byte & (0x01<<index)) ? 1:0; }
-	inline bool isDoneAll() { return (byte | 0x0f) == 0xff; }
-	int nWall() {
+	inline bool isDoneAll() const { return (byte | 0x0f) == 0xff; }
+	int nWall() const {
 		int cnt = 0;
 		if (bits.North) cnt++;
 		if (bits.East) cnt++;
@@ -43,7 +43,7 @@ public:
 		if (bits.West) cnt++;
 		return cnt;
 	}
-	int nDoneWall() {
+	int nDoneWall() const {
 		int cnt = 0;
 		if (bits.DoneNorth) cnt++;
 		if (bits.DoneEast) cnt++;
@@ -115,13 +115,12 @@ struct __attribute__ ((__packed__)) IndexVec {
 /*
  * 迷路の壁情報を扱う
  */
-struct Maze {
+class Maze {
 private:
-
-public:
-	//TODO:privateにする
 	Direction wall[MAZE_SIZE][MAZE_SIZE];
 	uint8_t stepMap[MAZE_SIZE][MAZE_SIZE];
+
+public:
 	Maze();
 	Maze(const Maze &obj)
 	{
@@ -146,6 +145,13 @@ public:
 	void updateWall(const IndexVec &cur, const Direction &newState, bool forceSetDone = true);
 	//TODO:毎回更新すると無駄 stepMapを参照する際、前回のアクセスから壁情報の更新があったときだけ更新する
 	void updateStepMap(const IndexVec &dist);
+
+	const Direction &getWall(const IndexVec &index) const { return wall[index.y][index.x]; }
+	const Direction &getWall(int8_t x, int8_t y) const { return wall[y][x]; }
+
+	const uint8_t &getStepMap(const IndexVec &index) const { return stepMap[index.y][index.x]; }
+	const uint8_t &getStepMap(int8_t x, int8_t y) const { return stepMap[y][x]; }
+
 };
 
 
