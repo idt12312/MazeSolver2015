@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <float.h>
 #include <math.h>
+#include <utility>
 
 #include <queue>
 #include <algorithm>
@@ -225,15 +226,15 @@ const std::list<Operation> ShortestPath::convertOperationList(const Path &path)
 
 	int8_t robotDir = 0;
 	for (size_t i=0;i<path.size()-1; i++) {
-		IndexVec dxdy = path[i+1] - path[i];
-		int8_t dir;
+		const IndexVec dxdy = path[i+1] - path[i];
+		int8_t dir = 0;
 		for (int j=0;j<4;j++) {
 			if (dxdy == IndexVec::vecDir[j]) {
 				dir = j;
 			}
 		}
 
-		int8_t dirDiff = dir - robotDir;
+		const int8_t dirDiff = dir - robotDir;
 		if (dirDiff == 0) {
 			opList.push_back(Operation(Operation::FORWARD));
 		}
@@ -243,6 +244,7 @@ const std::list<Operation> ShortestPath::convertOperationList(const Path &path)
 		else if (dirDiff == -1 || dirDiff == 3) {
 			opList.push_back(Operation(Operation::TURN_LEFT90));
 		}
+		//おかしい
 		else {
 			while(1);
 		}
@@ -260,7 +262,7 @@ const std::list<Operation> ShortestPath::convertOperationList(const Path &path)
 		}
 	}
 
-	return result;
+	return std::move(result);
 
 }
 
@@ -269,17 +271,16 @@ float ShortestPath::evalOperationList(const std::list<Operation> &actionList)
 	float cost = 0.0;
 	for (auto &operation : actionList) {
 		if (operation.op == Operation::FORWARD) {
-			//直線は速度が台形になるように加速すると仮定してコストを計算
-			//TODO:最小速度をいれる
+			//「直線は速度が台形になるように加速する」と仮定してコストを計算
 			const float distance = operation.n * MAZE_1BLOCK_LENGTH;
-			const float accelDistance = MAX_VELOCITY*MAX_VELOCITY / (2*ACCELERATION);
+			const float accelDistance = (MAX_VELOCITY*MAX_VELOCITY - MIN_VELOCITY*MIN_VELOCITY) / (2*ACCELERATION);
 
 			if (distance > 2*accelDistance) {
-				cost += (distance - 2*accelDistance)/MAX_VELOCITY + 2*(MAX_VELOCITY/ACCELERATION);
+				cost += (distance - 2*accelDistance)/MAX_VELOCITY + 2*( (MAX_VELOCITY-MIN_VELOCITY)/ACCELERATION);
 			}
 			else {
-				const float maxVelocity = sqrt(ACCELERATION*distance); //2*ACCELERATION*distance/2
-				cost += 2*(maxVelocity/ACCELERATION);
+				const float rt = sqrt(MIN_VELOCITY*MIN_VELOCITY + 2*ACCELERATION*distance/2);
+				cost += 2*( (-MIN_VELOCITY + rt)/ACCELERATION );
 			}
 		}
 		else if (operation.op == Operation::TURN_LEFT90 || operation.op == Operation::TURN_RIGHT90) {
@@ -290,7 +291,7 @@ float ShortestPath::evalOperationList(const std::list<Operation> &actionList)
 	return cost;
 }
 
-//TODO:未探索壁を使わない場合がおかしい?
+
 int ShortestPath::calcShortestTimePath(const IndexVec &start, const IndexVec &goal, int k, bool onlyUseFoundWall)
 {
 	std::list<IndexVec> goalList;

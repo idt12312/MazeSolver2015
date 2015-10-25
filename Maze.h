@@ -121,7 +121,7 @@ private:
 	uint8_t stepMap[MAZE_SIZE][MAZE_SIZE];
 
 public:
-	Maze();
+	Maze(){ clear(); }
 	Maze(const Maze &obj)
 	{
 		for (int i=0;i<MAZE_SIZE;i++) {
@@ -143,7 +143,6 @@ public:
 	void printStepMap() const;
 
 	void updateWall(const IndexVec &cur, const Direction &newState, bool forceSetDone = true);
-	//TODO:毎回更新すると無駄 stepMapを参照する際、前回のアクセスから壁情報の更新があったときだけ更新する
 	void updateStepMap(const IndexVec &dist);
 
 	const Direction &getWall(const IndexVec &index) const { return wall[index.y][index.x]; }

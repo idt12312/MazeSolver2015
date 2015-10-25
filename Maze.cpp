@@ -20,11 +20,6 @@ const IndexVec IndexVec::vecSouth(0,-1);
 const IndexVec IndexVec::vecWest(-1,0);
 const IndexVec IndexVec::vecDir[4] = {IndexVec::vecNorth, IndexVec::vecEast, IndexVec::vecSouth, IndexVec::vecWest};
 
-Maze::Maze()
-{
-	clear();
-}
-
 void Maze::clear()
 {
 	for (int i=0;i<MAZE_SIZE;i++) {
