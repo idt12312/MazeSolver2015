@@ -105,7 +105,7 @@ void Maze::printWall(const uint8_t value[MAZE_SIZE][MAZE_SIZE]) const
 			if(wall[y][x].bits.North) printf("----");
 			else printf("    ");
 		}
-		printf("+\n\r");
+		printf("+\n");
 
 		for (int x=0;x<MAZE_SIZE;x++) {
 			if (wall[y][x].bits.West) printf("|");
@@ -114,12 +114,12 @@ void Maze::printWall(const uint8_t value[MAZE_SIZE][MAZE_SIZE]) const
 			if (printValueOn) printf("%3u", value[y][x]);
 			else printf("   ");
 		}
-		printf("|\n\r");
+		printf("|\n");
 	}
 	for (int i=0;i<MAZE_SIZE;i++) {
 		printf("-----");
 	}
-	printf("+\n\r");
+	printf("+\n");
 }
 
 
@@ -135,7 +135,7 @@ void Maze::printWall(const bool value[MAZE_SIZE][MAZE_SIZE]) const
 			if(wall[y][x].bits.North) printf("----");
 			else printf("    ");
 		}
-		printf("+\n\r");
+		printf("+\n");
 
 		for (int x=0;x<MAZE_SIZE;x++) {
 			if (wall[y][x].bits.West) printf("|");
@@ -147,12 +147,12 @@ void Maze::printWall(const bool value[MAZE_SIZE][MAZE_SIZE]) const
 			}
 			else printf("   ");
 		}
-		printf("|\n\r");
+		printf("|\n");
 	}
 	for (int i=0;i<MAZE_SIZE;i++) {
 		printf("-----");
 	}
-	printf("+\n\r");
+	printf("+\n");
 }
 
 void Maze::printStepMap() const

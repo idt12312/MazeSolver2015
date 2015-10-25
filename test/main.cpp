@@ -64,15 +64,17 @@ void test_KShortestPath(const char *filename)
 	goalList.push_back(MAZE_GOAL2);
 	goalList.push_back(MAZE_GOAL3);
 	goalList.push_back(MAZE_GOAL4);
-	path.calcKShortestDistancePath(IndexVec(0,0), goalList, 20, false);
+	path.calcKShortestDistancePath(IndexVec(0,0), goalList, 2, false);
 
+	int cnt = 0;
 	for (auto &p : path.getKShortestDistancePath()) {
-		printf("length %lu\n", p.size());
+		cnt++;
+		printf("path#%d length %lu\n", cnt, p.size());
 		bool route[MAZE_SIZE][MAZE_SIZE] = {false};
 		for (auto &index : p) {
 			route[index.y][index.x] = true;
 		}
-		field.printWall(route);
+		//field.printWall(route);
 	}
 	printf("found %lu route\n", path.getKShortestDistancePath().size());
 }
@@ -89,7 +91,7 @@ void test_ShortestPathInTime(const char *filename)
 	goalList.push_back(MAZE_GOAL2);
 	goalList.push_back(MAZE_GOAL3);
 	goalList.push_back(MAZE_GOAL4);
-	path.calcShortestTimePath(IndexVec(0,0), goalList, 10, false);
+	path.calcShortestTimePath(IndexVec(0,0), goalList, 20, false);
 
 	auto &p = path.getShortestTimePath();
 	printf("length %lu\n", p.size());
@@ -122,7 +124,7 @@ void test_Agent(const char *filename)
 		for (int i=0;i<4;i++) {
 			if (dir[i]) cur += IndexVec::vecDir[i];
 		}
-		usleep(1000000/20);
+		//usleep(1000000/20);
 	}
 
 	bool route[MAZE_SIZE][MAZE_SIZE] = {false};
@@ -141,11 +143,11 @@ int main(int argc, char **argv)
 
 	}
 
-	test_Size();
-	test_Agent(argv[1]);
-	test_ShortestPath(argv[1]);
+	//test_Size();
+	//test_Agent(argv[1]);
+	//test_ShortestPath(argv[1]);
 	test_KShortestPath(argv[1]);
-	test_ShortestPathInTime(argv[1]);
+	//test_ShortestPathInTime(argv[1]);
 
 	printf("finish\n");
 

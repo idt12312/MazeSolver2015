@@ -119,6 +119,7 @@ struct Maze {
 private:
 
 public:
+	//TODO:privateにする
 	Direction wall[MAZE_SIZE][MAZE_SIZE];
 	uint8_t stepMap[MAZE_SIZE][MAZE_SIZE];
 	Maze();

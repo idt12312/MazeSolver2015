@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <float.h>
+#include <math.h>
 
 #include <queue>
 #include <algorithm>
@@ -97,8 +98,6 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 
 	std::reverse(shortestDistancePath.begin(), shortestDistancePath.end());
 
-	if(k_shortestDistancePath.empty()) k_shortestDistancePath.push_back(shortestDistancePath);
-
 	return true;
 }
 
@@ -162,7 +161,7 @@ int ShortestPath::calcKShortestDistancePath(const IndexVec &start, const std::li
 
 			Path rootPath(k_shortestDistancePath[k-1].begin(), k_shortestDistancePath[k-1].begin()+i+1);
 
-			for (Path &p :k_shortestDistancePath) {
+			for (const Path &p :k_shortestDistancePath) {
 				if (matchPath(p, rootPath, rootPath.size())) {
 					if (maze->wall[p[i].y][p[i].x].nWall() > 1) continue;
 					//i+1とiを結ぶノードを切断
@@ -172,7 +171,7 @@ int ShortestPath::calcKShortestDistancePath(const IndexVec &start, const std::li
 
 			//spurNodeを残して、それまでのrootPath上のNodeを削除する
 			//直後のspurNode->ゴールまでの最短経路の計算で無駄な経路を含まないため
-			for (IndexVec &rootPathNode : rootPath) {
+			for (const IndexVec &rootPathNode : rootPath) {
 				if (rootPathNode == spurNode) continue;
 				//rootPathNodeを削除する
 				removeNode(rootPathNode);
@@ -196,8 +195,6 @@ int ShortestPath::calcKShortestDistancePath(const IndexVec &start, const std::li
 			maze = new(maze) Maze(*tmpMaze);
 		}
 
-		B.sort( [](const Path &x, const Path &y){return x.size() < y.size();} );
-
 		//BからAにすでに含まれているものを削除する
 		for (auto it=B.begin();it!=B.end();) {
 			std::vector<IndexVec> Bitem((*it).begin(),(*it).end());
@@ -209,6 +206,8 @@ int ShortestPath::calcKShortestDistancePath(const IndexVec &start, const std::li
 		}
 
 		if (B.empty()) break;
+
+		B.sort( [](const Path &x, const Path &y){return x.size() < y.size();} );
 
 		k_shortestDistancePath.push_back(B.front());
 		B.pop_front();
@@ -240,11 +239,9 @@ const std::list<Operation> ShortestPath::convertOperationList(const Path &path)
 		}
 		else if (dirDiff == 1 || dirDiff == -3) {
 			opList.push_back(Operation(Operation::TURN_RIGHT90));
-			opList.push_back(Operation::FORWARD);
 		}
 		else if (dirDiff == -1 || dirDiff == 3) {
 			opList.push_back(Operation(Operation::TURN_LEFT90));
-			opList.push_back(Operation(Operation::FORWARD));
 		}
 		else {
 			while(1);
@@ -272,18 +269,21 @@ float ShortestPath::evalOperationList(const std::list<Operation> &actionList)
 	float cost = 0.0;
 	for (auto &operation : actionList) {
 		if (operation.op == Operation::FORWARD) {
-			if (operation.n == 1) cost += 1.0;
-			else if (operation.n == 2) cost += 1.8;
-			else if (operation.n == 3) cost += 2.5;
-			else if (operation.n == 4) cost += 3;
-			else if (operation.n == 5) cost += 3.5;
-			else if (operation.n >= 6) cost += 0.5 * (operation.n-6) + 4;
+			//直線は速度が台形になるように加速すると仮定してコストを計算
+			//TODO:最小速度をいれる
+			const float distance = operation.n * MAZE_1BLOCK_LENGTH;
+			const float accelDistance = MAX_VELOCITY*MAX_VELOCITY / (2*ACCELERATION);
+
+			if (distance > 2*accelDistance) {
+				cost += (distance - 2*accelDistance)/MAX_VELOCITY + 2*(MAX_VELOCITY/ACCELERATION);
+			}
+			else {
+				const float maxVelocity = sqrt(ACCELERATION*distance); //2*ACCELERATION*distance/2
+				cost += 2*(maxVelocity/ACCELERATION);
+			}
 		}
-		else if (operation.op == Operation::TURN_LEFT90) {
-			cost += 2;
-		}
-		else if (operation.op == Operation::TURN_RIGHT90) {
-			cost += 2;
+		else if (operation.op == Operation::TURN_LEFT90 || operation.op == Operation::TURN_RIGHT90) {
+			cost += TURN90_TIME;
 		}
 	}
 
@@ -291,7 +291,6 @@ float ShortestPath::evalOperationList(const std::list<Operation> &actionList)
 }
 
 //TODO:未探索壁を使わない場合がおかしい?
-//TODO:コストの計算 or kShortestPathの列挙がおかしい
 int ShortestPath::calcShortestTimePath(const IndexVec &start, const IndexVec &goal, int k, bool onlyUseFoundWall)
 {
 	std::list<IndexVec> goalList;
@@ -301,20 +300,6 @@ int ShortestPath::calcShortestTimePath(const IndexVec &start, const IndexVec &go
 
 int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<IndexVec> &goalList, int k, bool onlyUseFoundWall)
 {
-	/*
-	calcShortestPath(start,goal,false);
-	auto actions = convertActionList(shortestPath);
-	for (auto x : actions) {
-		if (x.action == ShortestPath::FORWARD) printf("F");
-		if (x.action == ShortestPath::TURN_LEFT90) printf("L");
-		if (x.action == ShortestPath::TURN_RIGHT90) printf("R");
-		printf("%d ",x.n);
-	}
-	printf("\n");
-	printf("cost %f\n", evalActionList(actions));
-	 */
-
-
 	if (calcKShortestDistancePath(start, goalList, k, onlyUseFoundWall) == 0) return false;
 	std::vector<uint32_t> costs;
 
@@ -329,10 +314,20 @@ int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<In
 		}
 	}
 
-	//TODO:Operationのリストをつくる
+	//Operationのリストをつくる
 	auto opList = convertOperationList(k_shortestDistancePath[shortestTimePath_index]);
 	shortestTimePath_operationList.clear();
 	shortestTimePath_operationList.assign(opList.begin(),opList.end());
+
+	//デバッグ用
+	for (auto operation : shortestTimePath_operationList) {
+		if (operation.op == Operation::FORWARD) printf("F");
+		if (operation.op == Operation::TURN_LEFT90) printf("L");
+		if (operation.op == Operation::TURN_RIGHT90) printf("R");
+		printf("%d ",operation.n);
+	}
+	printf("\n");
+
 	return true;
 }
 
@@ -346,11 +341,13 @@ void ShortestPath::calcNeedToSearchWallIndex()
 			for (int j=0;j<4;j++) {
 				if (dxdy == IndexVec::vecDir[j]) {
 					if (!maze->wall[path[i].y][path[i].x][j+4]) {
-						needToSearchWallIndex.push_back(path[i]);
+						auto it = std::find(needToSearchWallIndex.begin(), needToSearchWallIndex.end(), path[i]);
+						if (it == needToSearchWallIndex.end()) {
+							needToSearchWallIndex.push_back(path[i]);
+						}
 					}
 				}
 			}
 		}
 	}
-	needToSearchWallIndex.unique();
 }
