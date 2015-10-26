@@ -10,6 +10,16 @@ void Agent::reset()
 	state = Agent::IDLE;
 	path.clear();
 	distIndexList.clear();
+
+	dist.x = 0;
+	dist.y = 0;
+	nextDir = 0;
+
+	mazeGoalList.clear();
+	mazeGoalList.push_back(MAZE_GOAL1);
+	mazeGoalList.push_back(MAZE_GOAL2);
+	mazeGoalList.push_back(MAZE_GOAL3);
+	mazeGoalList.push_back(MAZE_GOAL4);
 }
 
 Direction Agent::calcNextDirection(const IndexVec &cur, const IndexVec &_dist)
