@@ -121,8 +121,6 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 			state = Agent::FINISHED;
 			nextDir = 0;
 
-			//最終的に走る最短経路を計算
-			path.calcShortestTimePath(IndexVec(0,0), mazeGoalList, SEARCH_DEPTH2, true);
 			return;
 		}
 		nextDir = calcNextDirection(cur, dist);
@@ -135,4 +133,10 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 
 
 	nextDir = calcNextDirection(cur, dist);
+}
+
+void Agent::caclRunSequence()
+{
+	if (state != Agent::FINISHED) return ;
+	path.calcShortestTimePath(IndexVec(0,0), mazeGoalList, SEARCH_DEPTH2, true);
 }

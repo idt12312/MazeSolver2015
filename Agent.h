@@ -25,7 +25,7 @@ public:
 		SEARCHING_NOT_GOAL, 	//探索中　まだ一度もゴールに到達していない
 		SEARCHING_REACHED_GOAL, //探索中　一度ゴールに到達したが、追加で探索をしている
 		BACK_TO_START, 			//スタートに戻っている
-		FINISHED 				//スタート地点に到着をし、最短経路の計算が終わった
+		FINISHED 				//スタート地点に到着をし、最短経路の計算の準備ができた
 	} State;
 
 private:
@@ -63,17 +63,23 @@ public:
 	//その場合はおそらく一旦停止して切り返す必要がある
 	const Direction &getNextDirection() const {return nextDir;}
 
-
 	//強制的にゴールに向かわせる
 	//探索に時間がかかりすぎている場合につかう(2分たったら呼び出すとか)
 	void forceGotoStart() { dist = IndexVec(0,0); state = Agent::BACK_TO_START; }
 
-	const Path &getShortestPath() const {return path.getShortestTimePath();}
-	const std::vector<Path> &getKShortestPath() const {return path.getKShortestDistancePath();}
+	//現在の目標地点を取得
 	const IndexVec& getDist() const { return dist; }
 	const std::list<IndexVec> &getDistList() const { return distIndexList; }
 
+	//現在のk最短経路の取得
+	const std::vector<Path> &getKShortestPath() const {return path.getKShortestDistancePath();}
+
+	//最終的に走る経路を計算する
+	//Agentの状態がFINISHEDになっている時に実行する
+	void caclRunSequence();
+	const Path &getShortestPath() const {return path.getShortestTimePath();}
 	const std::vector<Operation> &getRunSequence() const { return path.getShortestTimePathOperation(); }
+
 	//TODO:途中から再開できるようにしたい
 
 	void reset();
