@@ -20,21 +20,16 @@ const IndexVec IndexVec::vecSouth(0,-1);
 const IndexVec IndexVec::vecWest(-1,0);
 const IndexVec IndexVec::vecDir[4] = {IndexVec::vecNorth, IndexVec::vecEast, IndexVec::vecSouth, IndexVec::vecWest};
 
-Maze::Maze()
-{
-	clear();
-}
-
 void Maze::clear()
 {
-	for (int i=0;i<N;i++) {
-		for (int j=0;j<N;j++) {
+	for (int i=0;i<MAZE_SIZE;i++) {
+		for (int j=0;j<MAZE_SIZE;j++) {
 			wall[i][j] = 0;
 		}
 	}
-	for (int i=0;i<N;i++) {
-		wall[N-1][i] |= NORTH | DONE_NORTH;
-		wall[i][N-1] |= EAST | DONE_EAST;
+	for (int i=0;i<MAZE_SIZE;i++) {
+		wall[MAZE_SIZE-1][i] |= NORTH | DONE_NORTH;
+		wall[i][MAZE_SIZE-1] |= EAST | DONE_EAST;
 		wall[0][i] |= SOUTH | DONE_SOUTH;
 		wall[i][0] |= WEST | DONE_WEST;
 	}
@@ -66,8 +61,8 @@ bool Maze::loadFromFile(const char *_filename)
 			if ('0' <= ch && ch <= '9') wall_bin = ch - '0';
 			else wall_bin = ch - 'a' + 10;
 
-			size_t y = N -1 -cnt/N;
-			size_t x = cnt%N;
+			size_t y = MAZE_SIZE -1 -cnt/MAZE_SIZE;
+			size_t x = cnt%MAZE_SIZE;
 			wall[y][x].byte = wall_bin | 0xf0;
 			cnt++;
 		}
@@ -78,11 +73,11 @@ bool Maze::loadFromFile(const char *_filename)
 }
 
 
-void Maze::loadFromArray(const char asciiData[N+1][N+1])
+void Maze::loadFromArray(const char asciiData[MAZE_SIZE+1][MAZE_SIZE+1])
 {
-	for (int i=0;i<N;i++) {
-		for (int j=0;j<N;j++) {
-			char ch = asciiData[N-1-i][j];
+	for (int i=0;i<MAZE_SIZE;i++) {
+		for (int j=0;j<MAZE_SIZE;j++) {
+			char ch = asciiData[MAZE_SIZE-1-i][j];
 			if ( ('0' <= ch && ch <= '9') || ('a' <= ch && ch <= 'f')) {
 				uint8_t wall_bin;
 				if ('0' <= ch && ch <= '9') wall_bin = ch - '0';
@@ -94,50 +89,50 @@ void Maze::loadFromArray(const char asciiData[N+1][N+1])
 	}
 }
 
-void Maze::printWall(const uint8_t value[N][N]) const
+void Maze::printWall(const uint8_t value[MAZE_SIZE][MAZE_SIZE]) const
 {
 	bool printValueOn = false;
 	if (value) printValueOn = true;
 
-	for (int y=N-1;y>=0;y--) {
-		for (int x=0;x<N;x++) {
+	for (int y=MAZE_SIZE-1;y>=0;y--) {
+		for (int x=0;x<MAZE_SIZE;x++) {
 			printf("+");
 			if(wall[y][x].bits.North) printf("----");
 			else printf("    ");
 		}
-		printf("+\n\r");
+		printf("+\n");
 
-		for (int x=0;x<N;x++) {
+		for (int x=0;x<MAZE_SIZE;x++) {
 			if (wall[y][x].bits.West) printf("|");
 			else printf(" ");
 			printf(" ");
 			if (printValueOn) printf("%3u", value[y][x]);
 			else printf("   ");
 		}
-		printf("|\n\r");
+		printf("|\n");
 	}
-	for (int i=0;i<N;i++) {
+	for (int i=0;i<MAZE_SIZE;i++) {
 		printf("-----");
 	}
-	printf("+\n\r");
+	printf("+\n");
 }
 
 
 
-void Maze::printWall(const bool value[N][N]) const
+void Maze::printWall(const bool value[MAZE_SIZE][MAZE_SIZE]) const
 {
 	bool printValueOn = false;
 	if (value) printValueOn = true;
 
-	for (int y=N-1;y>=0;y--) {
-		for (int x=0;x<N;x++) {
+	for (int y=MAZE_SIZE-1;y>=0;y--) {
+		for (int x=0;x<MAZE_SIZE;x++) {
 			printf("+");
 			if(wall[y][x].bits.North) printf("----");
 			else printf("    ");
 		}
-		printf("+\n\r");
+		printf("+\n");
 
-		for (int x=0;x<N;x++) {
+		for (int x=0;x<MAZE_SIZE;x++) {
 			if (wall[y][x].bits.West) printf("|");
 			else printf(" ");
 			printf("  ");
@@ -147,12 +142,12 @@ void Maze::printWall(const bool value[N][N]) const
 			}
 			else printf("   ");
 		}
-		printf("|\n\r");
+		printf("|\n");
 	}
-	for (int i=0;i<N;i++) {
+	for (int i=0;i<MAZE_SIZE;i++) {
 		printf("-----");
 	}
-	printf("+\n\r");
+	printf("+\n");
 }
 
 void Maze::printStepMap() const
@@ -181,7 +176,7 @@ void Maze::updateWall(const IndexVec &cur, const Direction& newState, bool force
 
 void Maze::updateStepMap(const IndexVec &dist)
 {
-	memset(&stepMap, 0xff, sizeof(uint8_t)*N*N);
+	memset(&stepMap, 0xff, sizeof(uint8_t)*MAZE_SIZE*MAZE_SIZE);
 	stepMap[dist.y][dist.x] = 0;
 
 	std::queue<IndexVec> q;

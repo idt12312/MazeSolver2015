@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <algorithm>
+
+#include "MazeSolver_conf.h"
 #include "Agent.h"
 
-#define SEARCH_DEPTH 1
 
 void Agent::reset()
 {
@@ -14,21 +15,21 @@ void Agent::reset()
 Direction Agent::calcNextDirection(const IndexVec &cur, const IndexVec &_dist)
 {
 	maze->updateStepMap(_dist);
-	const uint8_t curStep = maze->stepMap[cur.y][cur.x];
+	const uint8_t curStep = maze->getStepMap(cur);
 	if (curStep == 255) return Direction(0);
 
 	Direction result(0);
 	int nFoundWall = 10;
-	const Direction cur_wall = maze->wall[cur.y][cur.x];
+	const Direction cur_wall = maze->getWall(cur);
 	for (int i=0;i<4;i++) {
 		if (cur.canSum(IndexVec::vecDir[i])) {
 			IndexVec neighbor(cur + IndexVec::vecDir[i]);
-			if (!cur_wall[i] && maze->stepMap[neighbor.y][neighbor.x] < curStep ) {
+			if (!cur_wall[i] && maze->getStepMap(neighbor) < curStep ) {
 				//北優先
 				//return Direction(NORTH << i);
 				//未探索の壁優先
-				if (nFoundWall > maze->wall[neighbor.y][neighbor.x].nDoneWall()) {
-					nFoundWall = maze->wall[neighbor.y][neighbor.x].nDoneWall();
+				if (nFoundWall > maze->getWall(neighbor).nDoneWall()) {
+					nFoundWall = maze->getWall(neighbor).nDoneWall();
 					result = Direction(NORTH << i);
 				}
 			}
@@ -39,12 +40,12 @@ Direction Agent::calcNextDirection(const IndexVec &cur, const IndexVec &_dist)
 	for (int i=0;i<4;i++) {
 		if (cur.canSum(IndexVec::vecDir[i])) {
 			IndexVec neighbor(cur + IndexVec::vecDir[i]);
-			if (!cur_wall[i] && maze->stepMap[neighbor.y][neighbor.x] == curStep ) {
+			if (!cur_wall[i] && maze->getStepMap(neighbor) == curStep ) {
 				//北優先
 				//return Direction(NORTH << i);
 				//未探索壁優先
-				if (nFoundWall > maze->wall[neighbor.y][neighbor.x].nDoneWall()) {
-					nFoundWall = maze->wall[neighbor.y][neighbor.x].nDoneWall();
+				if (nFoundWall > maze->getWall(neighbor).nDoneWall()) {
+					nFoundWall = maze->getWall(neighbor).nDoneWall();
 					result = Direction(NORTH << i);
 				}
 			}
@@ -84,43 +85,34 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 
 
 	if (state == Agent::SEARCHING_REACHED_GOAL) {
-		//distでは無いが、distIndexListの一部を通過したからそれをリストから削除する
-		//TODO:distIndexListに含まれる壁情報が更新されることになるが、distIndexListは更新されない dist==curでなく、cur in distを条件にすべき
-		for (auto it = distIndexList.begin();it!=distIndexList.end();) {
-			if (*it == cur){
-				it = distIndexList.erase(it);
-				continue;
-			}
-			it++;
-		}
 		//TODO:到達不可能な壁がdistIndexListに入りっぱなしになっている可能性
 		//TODO:到達不可能な壁が連続で出てくる可能性 詰みマスに囲まれた場合はどうなるのだろう
-		if (dist == cur || calcNextDirection(cur, dist) == 0) {
+
+		//distIndexListのどれかに到達した or 目標地点が到達不能だと分かった
+		auto it = std::find(distIndexList.begin(), distIndexList.end(), cur);
+		if (it != distIndexList.end() || calcNextDirection(cur, dist) == 0) {
 			distIndexList.clear();
-			path.calcKShortestDistancePath(IndexVec(0,0), mazeGoalList,SEARCH_DEPTH, false);
+			path.calcKShortestDistancePath(IndexVec(0,0), mazeGoalList,SEARCH_DEPTH1, false);
 			path.calcNeedToSearchWallIndex();
 			distIndexList.assign(path.getNeedToSearchIndex().begin(), path.getNeedToSearchIndex().end());
+
 			if (distIndexList.empty()) {
-				distIndexList.clear();
 				distIndexList.push_back(IndexVec(0,0));
-				dist = distIndexList.front();
 				state = Agent::BACK_TO_START;
 			}
-			else {
-				maze->updateStepMap(dist);
-				distIndexList.sort(
-						[&](const IndexVec& lhs, const IndexVec& rhs)
-						{
-					const unsigned curStep = maze->stepMap[cur.y][cur.x];
-					const unsigned lhsStep = maze->stepMap[lhs.y][lhs.x];
-					const unsigned rhsStep = maze->stepMap[rhs.y][rhs.x];
-					return (lhsStep - curStep) < (rhsStep - curStep);
-						}
-				);
-				distIndexList.unique();
-				dist = distIndexList.front();
-			}
 		}
+		maze->updateStepMap(cur);
+		distIndexList.sort(
+				[&](const IndexVec& lhs, const IndexVec& rhs)
+				{
+			const unsigned curStep = maze->getStepMap(cur);
+			const unsigned lhsStep = maze->getStepMap(lhs);
+			const unsigned rhsStep = maze->getStepMap(rhs);
+			return (lhsStep - curStep) < (rhsStep - curStep);
+				}
+		);
+		distIndexList.unique();
+		dist = distIndexList.front();
 	}
 
 
@@ -129,8 +121,6 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 			state = Agent::FINISHED;
 			nextDir = 0;
 
-			//最終的に走る最短経路を計算
-			path.calcShortestTimePath(IndexVec(0,0), mazeGoalList, 20, true);
 			return;
 		}
 		nextDir = calcNextDirection(cur, dist);
@@ -143,4 +133,10 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 
 
 	nextDir = calcNextDirection(cur, dist);
+}
+
+void Agent::caclRunSequence()
+{
+	if (state != Agent::FINISHED) return ;
+	path.calcShortestTimePath(IndexVec(0,0), mazeGoalList, SEARCH_DEPTH2, true);
 }

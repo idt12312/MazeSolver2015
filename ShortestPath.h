@@ -30,7 +30,7 @@ struct Operation {
 };
 
 class ShortestPath {
-public:
+private:
 	//Dijkstraで計算するときに使う
 	struct __attribute__ ((__packed__)) Node {
 		IndexVec index;
@@ -43,10 +43,8 @@ public:
 		};
 	};
 
-private:
-
 	Maze *maze;
-	Node node[N][N];
+	Node node[MAZE_SIZE][MAZE_SIZE];
 	Path shortestDistancePath;
 	std::vector< Path > k_shortestDistancePath;
 	int shortestTimePath_index;
@@ -59,7 +57,6 @@ private:
 	void removeNode(const IndexVec& node);
 	bool matchPath(const Path &path1, const Path &path2, int n);
 
-	//TODO:値で返さない
 	//Pathを入れるとOperationのリストを返す
 	const std::list<Operation> convertOperationList(const Path &path);
 	//Operationのリストから合計コストを計算する

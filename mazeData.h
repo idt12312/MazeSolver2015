@@ -3,16 +3,16 @@
 
 #include "Maze.h"
 
-extern const char mazeData_maze2011exp[N+1][N+1];
-extern const char mazeData_maze2011fr[N+1][N+1];
-extern const char mazeData_maze2012exp[N+1][N+1];
-extern const char mazeData_maze2013exp[N+1][N+1];
-extern const char mazeData_maze2013fr[N+1][N+1];
-extern const char mazeData_maze2013taiwan[N+1][N+1];
-extern const char mazeData_maze2[N+1][N+1];
-extern const char mazeData_maze3[N+1][N+1];
-extern const char mazeData_maze4[N+1][N+1];
-extern const char mazeData_maze5[N+1][N+1];
-extern const char mazeData_maze[N+1][N+1];
+extern const char mazeData_maze2011exp[16+1][16+1];
+extern const char mazeData_maze2011fr[16+1][16+1];
+extern const char mazeData_maze2012exp[16+1][16+1];
+extern const char mazeData_maze2013exp[16+1][16+1];
+extern const char mazeData_maze2013fr[16+1][16+1];
+extern const char mazeData_maze2013taiwan[16+1][16+1];
+extern const char mazeData_maze2[16+1][16+1];
+extern const char mazeData_maze3[16+1][16+1];
+extern const char mazeData_maze4[16+1][16+1];
+extern const char mazeData_maze5[16+1][16+1];
+extern const char mazeData_maze[16+1][16+1];
 
 #endif /* MAZEDATA_H_ */
