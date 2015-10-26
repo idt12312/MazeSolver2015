@@ -134,7 +134,7 @@ public:
 
 	//ロードするファイル、配列のデータの並びは迷路を実際に見た時と同じ並び方
 	//Maze.wallは上下が逆転しているから注意
-	//file[i][j] = ascii[i][j] = wall[N-1-i][j]
+    //file[i][j] = ascii[i][j] = wall[MAZE_SIZE-1-i][j]
 	bool loadFromFile(const char *_filename);
 	void loadFromArray(const char asciiData[MAZE_SIZE+1][MAZE_SIZE+1]);
 
