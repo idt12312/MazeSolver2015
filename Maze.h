@@ -193,12 +193,12 @@ public:
 	void updateStepMap(const IndexVec &dist);
 
 	//指定座標の壁情報を取得
-	const Direction &getWall(const IndexVec &index) const { return wall[index.y][index.x]; }
-	const Direction &getWall(int8_t x, int8_t y) const { return wall[y][x]; }
+	inline const Direction &getWall(const IndexVec &index) const { return wall[index.y][index.x]; }
+	inline const Direction &getWall(int8_t x, int8_t y) const { return wall[y][x]; }
 
 	//指定座標の歩数マップを取得
-	const uint8_t &getStepMap(const IndexVec &index) const { return stepMap[index.y][index.x]; }
-	const uint8_t &getStepMap(int8_t x, int8_t y) const { return stepMap[y][x]; }
+	inline const uint8_t &getStepMap(const IndexVec &index) const { return stepMap[index.y][index.x]; }
+	inline const uint8_t &getStepMap(int8_t x, int8_t y) const { return stepMap[y][x]; }
 
 };
 

@@ -126,6 +126,7 @@ void test_Agent(const char *filename)
 		//usleep(1000000/20);
 	}
 
+	agent.caclRunSequence();
 	bool route[MAZE_SIZE][MAZE_SIZE] = {false};
 	for (auto &index : agent.getShortestPath()) {
 		route[index.y][index.x] = true;
@@ -143,10 +144,10 @@ int main(int argc, char **argv)
 	}
 
 	//test_Size();
-	//test_Agent(argv[1]);
+	test_Agent(argv[1]);
 	//test_ShortestPath(argv[1]);
 	//test_KShortestPath(argv[1]);
-	test_ShortestPathInTime(argv[1]);
+	//test_ShortestPathInTime(argv[1]);
 
 	printf("finish\n");
 

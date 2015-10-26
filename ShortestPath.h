@@ -82,22 +82,38 @@ private:
 
 public:
 	ShortestPath(Maze &_maze, bool _useDiagonalPath = false)
-: maze(&_maze), shortestTimePath_index(-1), useDiagonalPath(_useDiagonalPath){ }
-	void clear() {shortestDistancePath.clear(); needToSearchWallIndex.clear(); shortestTimePath_index=-1;}
+: maze(&_maze), shortestTimePath_index(-1), useDiagonalPath(_useDiagonalPath)
+{
+		clear();
+}
+
+	void clear() {
+		shortestDistancePath.clear();
+		needToSearchWallIndex.clear();
+		shortestTimePath_index=-1;
+		for (int i=0;i<MAZE_SIZE;i++) {
+			for (int j=0;j<MAZE_SIZE;j++) {
+				node[i][j].index.x = j;
+				node[i][j].index.y = i;
+				node[i][j].from = 0;
+				node[i][j].minCost = 0;
+			}
+		}
+	}
 
 	//startからgoalへの最短経路を計算し、shortestDistancePathに格納する
 	//goalListを与えた場合、goalListに含まれる座標のうち一番近い座標への道のりを計算する
 	//onlyUseFoundWall=trueのとき、未探索壁を通らない経路を生成する
 	int calcShortestDistancePath(const IndexVec &start, const IndexVec &goal, bool onlyUseFoundWall);
 	int calcShortestDistancePath(const IndexVec &start, const std::list<IndexVec> &goalList, bool onlyUseFoundWall);
-	const Path &getShortestDistancePath() const { return shortestDistancePath; }
+	inline const Path &getShortestDistancePath() const { return shortestDistancePath; }
 
 	//k最短経路を計算する
 	//calcShortestDistancePathと振る舞いは同じ
 	//結果はk_shortestDistancePathに格納
 	int calcKShortestDistancePath(const IndexVec &start, const IndexVec &goal, int k, bool onlyUseFoundWall);
 	int calcKShortestDistancePath(const IndexVec &start, const std::list<IndexVec> &goalList, int k, bool onlyUseFoundWall);
-	const std::vector< Path > &getKShortestDistancePath() const { return k_shortestDistancePath; }
+	inline const std::vector< Path > &getKShortestDistancePath() const { return k_shortestDistancePath; }
 
 	//時間に関して最短(だろう)経路を計算する
 	//内部でk_shortestDistancePathを実行し、k個のpathの走行時間を計算する
@@ -105,14 +121,14 @@ public:
 	//最短経路のindex(k_shortestDistancePathの)をshortestTimePath_indexに格納する
 	int calcShortestTimePath(const IndexVec &start, const IndexVec &goal, int k, bool onlyUseFoundWall);
 	int calcShortestTimePath(const IndexVec &start, const std::list<IndexVec> &goalList, int k, bool onlyUseFoundWall);
-	const Path &getShortestTimePath() const { return k_shortestDistancePath[shortestTimePath_index]; }
-	const std::vector<Operation> &getShortestTimePathOperation() const { return shortestTimePath_operationList; }
+	inline const Path &getShortestTimePath() const { return k_shortestDistancePath[shortestTimePath_index]; }
+	inline const std::vector<Operation> &getShortestTimePathOperation() const { return shortestTimePath_operationList; }
 
 	//kShortestDistancePath上の未探索壁がある座標リストを計算する。
 	//この座標が追加で探索すべき座標になる
 	//calcKShortestDistancePathを実行してから実行する
 	void calcNeedToSearchWallIndex();
-	const std::list<IndexVec> &getNeedToSearchIndex() const { return needToSearchWallIndex; }
+	inline const std::list<IndexVec> &getNeedToSearchIndex() const { return needToSearchWallIndex; }
 };
 
 

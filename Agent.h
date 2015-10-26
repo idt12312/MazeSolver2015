@@ -67,30 +67,30 @@ public:
 
 	//現在の状態を返す
 	//updateを呼び出したあとは必ずこれを読んで状態を確認する
-	const State &getState() const {return state;}
+	inline const State &getState() const {return state;}
 
 	//次にロボットが動くべき方向を返す
 	//0が帰ってきた場合は終了した時(おそらくロボットは停止すべき)
 	//今の向きと180度逆方向が出てくる場合もある
 	//その場合はおそらく一旦停止して切り返す必要がある
-	const Direction &getNextDirection() const {return nextDir;}
+	inline const Direction &getNextDirection() const {return nextDir;}
 
 	//強制的にゴールに向かわせる
 	//探索に時間がかかりすぎている場合につかう(2分たったら呼び出すとか)
 	void forceGotoStart() { dist = IndexVec(0,0); state = Agent::BACK_TO_START; }
 
 	//現在の目標地点を取得
-	const IndexVec& getDist() const { return dist; }
-	const std::list<IndexVec> &getDistList() const { return distIndexList; }
+	inline const IndexVec& getDist() const { return dist; }
+	inline const std::list<IndexVec> &getDistList() const { return distIndexList; }
 
 	//現在のk最短経路の取得
-	const std::vector<Path> &getKShortestPath() const {return path.getKShortestDistancePath();}
+	inline const std::vector<Path> &getKShortestPath() const {return path.getKShortestDistancePath();}
 
 	//最終的に走る経路を計算する
 	//Agentの状態がFINISHEDになっている時に実行する
 	void caclRunSequence();
-	const Path &getShortestPath() const {return path.getShortestTimePath();}
-	const std::vector<Operation> &getRunSequence() const { return path.getShortestTimePathOperation(); }
+	inline const Path &getShortestPath() const {return path.getShortestTimePath();}
+	inline const std::vector<Operation> &getRunSequence() const { return path.getShortestTimePathOperation(); }
 
 	//TODO:途中から再開できるようにしたい
 
