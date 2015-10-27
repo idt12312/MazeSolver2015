@@ -26,7 +26,7 @@ void test_Maze(const char *filename)
 {
 	Maze field;
 	field.loadFromFile(filename);
-	//field.loadFromArray(mazeData_maze);
+	//field.loadFromArray(mazeData_99test);
 	field.printWall();
 }
 
@@ -34,7 +34,7 @@ void test_ShortestPath(const char *filename)
 {
 	Maze field;
 	field.loadFromFile(filename);
-	//field.loadFromArray(mazeData_maze);
+	//field.loadFromArray(mazeData_99test);
 
 	ShortestPath path(field);
 	std::list<IndexVec> goalList;
@@ -55,7 +55,7 @@ void test_KShortestPath(const char *filename)
 {
 	Maze field;
 	field.loadFromFile(filename);
-	//field.loadFromArray(mazeData_maze);
+	//field.loadFromArray(mazeData_99test);
 
 	ShortestPath path(field);
 	std::list<IndexVec> goalList;
@@ -73,7 +73,7 @@ void test_KShortestPath(const char *filename)
 		for (auto &index : p) {
 			route[index.y][index.x] = true;
 		}
-		//field.printWall(route);
+		field.printWall(route);
 	}
 	printf("found %lu route\n", path.getKShortestDistancePath().size());
 }
@@ -106,7 +106,7 @@ void test_Agent(const char *filename)
 	Maze field;
 	Maze mazeInRobot;
 	field.loadFromFile(filename);
-	//field.loadFromArray(mazeData_maze);
+	//field.loadFromArray(mazeData_99test);
 
 	Agent agent(mazeInRobot);
 
@@ -114,7 +114,7 @@ void test_Agent(const char *filename)
 	while(1) {
 		bool pos[MAZE_SIZE][MAZE_SIZE] = {false};
 		pos[cur.y][cur.x] = true;
-		//mazeInRobot.printWall(pos);
+		mazeInRobot.printWall(pos);
 
 		agent.update(cur, field.getWall(cur));
 		if (agent.getState() == Agent::FINISHED) break;
@@ -123,7 +123,7 @@ void test_Agent(const char *filename)
 		for (int i=0;i<4;i++) {
 			if (dir[i]) cur += IndexVec::vecDir[i];
 		}
-		//usleep(1000000/20);
+		usleep(1000000/10);
 	}
 
 	agent.caclRunSequence();
@@ -143,6 +143,7 @@ int main(int argc, char **argv)
 
 	}
 
+	//test_Maze(0);
 	//test_Size();
 	test_Agent(argv[1]);
 	//test_ShortestPath(argv[1]);

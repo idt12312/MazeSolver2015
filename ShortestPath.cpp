@@ -141,6 +141,7 @@ int ShortestPath::calcKShortestDistancePath(const IndexVec &start, const std::li
 	//k=1の時は最短経路のみを計算しておわり
 	if (_k == 1) {
 		if (calcShortestDistancePath(start, goalList, onlyUseFoundWall) == 0) return 0;
+		k_shortestDistancePath.clear();
 		k_shortestDistancePath.push_back(shortestDistancePath);
 		return 1;
 	}
