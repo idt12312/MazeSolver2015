@@ -21,8 +21,6 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 {
 	for (int i=0;i<MAZE_SIZE;i++) {
 		for (int j=0;j<MAZE_SIZE;j++) {
-			node[i][j].index.x = j;
-			node[i][j].index.y = i;
 			node[i][j].from = 0;
 			node[i][j].minCost = 0;
 		}
@@ -45,8 +43,9 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 			it = indexList.erase(it);
 		}
 
+
+		const IndexVec cur = doneNode->index;
 		for (int i=0;i<4;i++) {
-			const IndexVec cur = doneNode->index;
 			//壁がある
 			if (maze->getWall(cur)[i]) continue;
 			//未探索の壁がある
@@ -54,7 +53,6 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 
 			if (!cur.canSum(IndexVec::vecDir[i])) continue;
 			IndexVec toIndex(cur + IndexVec::vecDir[i]);
-
 
 			const int16_t cost = doneNode->minCost + 1;
 			Node* toNode = &node[toIndex.y][toIndex.x];
@@ -140,6 +138,14 @@ int ShortestPath::calcKShortestDistancePath(const IndexVec &start, const IndexVe
 //Yen's k shortest path algorithm
 int ShortestPath::calcKShortestDistancePath(const IndexVec &start, const std::list<IndexVec> &goalList, int _k, bool onlyUseFoundWall)
 {
+	//k=1の時は最短経路のみを計算しておわり
+	if (_k == 1) {
+		if (calcShortestDistancePath(start, goalList, onlyUseFoundWall) == 0) return 0;
+		k_shortestDistancePath.clear();
+		k_shortestDistancePath.push_back(shortestDistancePath);
+		return 1;
+	}
+
 	//mazeを一旦退避
 	//書き換えるようにあたらしいものをつくって差し替える
 	Maze *tmpMaze = maze;
@@ -342,6 +348,7 @@ void ShortestPath::calcNeedToSearchWallIndex()
 			for (int j=0;j<4;j++) {
 				if (dxdy == IndexVec::vecDir[j]) {
 					if (!maze->getWall(path[i])[j+4]) {
+						//唯一になるようにいれる
 						auto it = std::find(needToSearchWallIndex.begin(), needToSearchWallIndex.end(), path[i]);
 						if (it == needToSearchWallIndex.end()) {
 							needToSearchWallIndex.push_back(path[i]);

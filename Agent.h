@@ -9,15 +9,17 @@
 #include "Maze.h"
 #include "ShortestPath.h"
 
-/*
- * 探索時にロボットに動きの指示を与える
- * 探索・最短経路の計算において最も上位に位置する
+
+/**************************************************************
+ * Agent
+ *	探索時にロボットに動きの指示を与える
+ *	探索・最短経路の計算において最も上位に位置する
  *
- * 一区画進むごとにupdateを呼び出して今の座標と壁情報を入力していく
- * updateを実行すると次に進むべき方向が計算される
+ *	一区画進むごとにupdateを呼び出して今の座標と壁情報を入力していく
+ *	updateを実行すると次に進むべき方向が計算される
  *
- * 迷路情報は外に保存をするが、Agent::updateを通して更新をしていく
- */
+ *	迷路情報は外に保存をするが、Agent::updateを通して更新をしていく
+ **************************************************************/
 class Agent {
 public:
 	typedef enum {
@@ -31,22 +33,32 @@ public:
 private:
 	Maze* maze;
 	State state;
-	IndexVec dist;
-	std::list<IndexVec> distIndexList;
-	Direction nextDir;
-	ShortestPath path;
+
+	//迷路のゴール座標リスト(MazeSolver_conf.hで定義)
 	std::list<IndexVec> mazeGoalList;
 
+	//現在目指している目標座標
+	IndexVec dist;
+
+	//目標座標リスト
+	std::list<IndexVec> distIndexList;
+
+	//次にロボットが向かうべき方向(絶対座標)
+	Direction nextDir;
+
+	//最短経路の計算をするやつ
+	ShortestPath path;
+
+
+	//足立法で次に進むべき方向を算出してくれる
 	Direction calcNextDirection(const IndexVec &cur, const IndexVec &dist);
 
+
 public:
-	Agent(Maze &_maze) :maze(&_maze), state(Agent::IDLE), path(_maze)
-	{
-		mazeGoalList.push_back(MAZE_GOAL1);
-		mazeGoalList.push_back(MAZE_GOAL2);
-		mazeGoalList.push_back(MAZE_GOAL3);
-		mazeGoalList.push_back(MAZE_GOAL4);
-	}
+	Agent(Maze &_maze) :maze(&_maze), state(Agent::IDLE), path(_maze) { reset(); }
+
+	//状態をIDLEにし、path関連を全てクリアする
+	void reset();
 
 	//状態を更新する
 	//cur:今の座標
@@ -55,34 +67,32 @@ public:
 
 	//現在の状態を返す
 	//updateを呼び出したあとは必ずこれを読んで状態を確認する
-	const State &getState() const {return state;}
+	inline const State &getState() const {return state;}
 
 	//次にロボットが動くべき方向を返す
-	//0が帰ってきた場合はバグったときか、終了した時(おそらくロボットは停止すべき)
+	//0が帰ってきた場合は終了した時(おそらくロボットは停止すべき)
 	//今の向きと180度逆方向が出てくる場合もある
 	//その場合はおそらく一旦停止して切り返す必要がある
-	const Direction &getNextDirection() const {return nextDir;}
+	inline const Direction &getNextDirection() const {return nextDir;}
 
 	//強制的にゴールに向かわせる
 	//探索に時間がかかりすぎている場合につかう(2分たったら呼び出すとか)
 	void forceGotoStart() { dist = IndexVec(0,0); state = Agent::BACK_TO_START; }
 
 	//現在の目標地点を取得
-	const IndexVec& getDist() const { return dist; }
-	const std::list<IndexVec> &getDistList() const { return distIndexList; }
+	inline const IndexVec& getDist() const { return dist; }
+	inline const std::list<IndexVec> &getDistList() const { return distIndexList; }
 
 	//現在のk最短経路の取得
-	const std::vector<Path> &getKShortestPath() const {return path.getKShortestDistancePath();}
+	inline const std::vector<Path> &getKShortestPath() const {return path.getKShortestDistancePath();}
 
 	//最終的に走る経路を計算する
 	//Agentの状態がFINISHEDになっている時に実行する
 	void caclRunSequence();
-	const Path &getShortestPath() const {return path.getShortestTimePath();}
-	const std::vector<Operation> &getRunSequence() const { return path.getShortestTimePathOperation(); }
+	inline const Path &getShortestPath() const {return path.getShortestTimePath();}
+	inline const std::vector<Operation> &getRunSequence() const { return path.getShortestTimePathOperation(); }
 
 	//TODO:途中から再開できるようにしたい
-
-	void reset();
 
 };
 
