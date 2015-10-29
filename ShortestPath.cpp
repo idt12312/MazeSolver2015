@@ -28,20 +28,19 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 
 	shortestDistancePath.clear();
 	node[start.y][start.x].minCost = 1;
-	std::priority_queue<Node*, std::vector<Node*>, Node::PointerLess> q;
-	std::list<IndexVec> indexList;
 
-	q.push(&node[start.y][start.x]);
-	indexList.push_back(start);
+	//priority queueじゃなくてlistを使う
+	//Node*の値はpushしたあとに勝手に変わる可能性があるため
+	std::list<Node*> q;
+
+	q.push_back(&node[start.y][start.x]);
 
 	while (!q.empty()) {
-		Node* doneNode = q.top(); q.pop();
-
-		//取り出したdoneNodeにあたるindexListの要素を消す
-		auto it = std::find(indexList.begin(), indexList.end(), doneNode->index);
-		if (it != indexList.end()) {
-			it = indexList.erase(it);
-		}
+		//ソートして、一番大きい物(back)を取り出す
+		q.sort(
+				[](const Node* lhs, const Node* rhs) { return lhs->minCost < rhs->minCost; }
+		);
+		Node* doneNode = q.back(); q.pop_back();
 
 
 		const IndexVec cur = doneNode->index;
@@ -54,14 +53,24 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 			if (!cur.canSum(IndexVec::vecDir[i])) continue;
 			IndexVec toIndex(cur + IndexVec::vecDir[i]);
 
+			//TODO:道が分岐しない、1本道の部分は分岐点に到達するまでcostを書き込みつつたどる
+			//毎回priority queueに突っ込んでると時間が無駄そう
 			const int16_t cost = doneNode->minCost + 1;
 			Node* toNode = &node[toIndex.y][toIndex.x];
 			if (toNode->minCost == 0  || cost < toNode->minCost) {
 				toNode->minCost = cost;
 				toNode->from = Direction(0x01<<i);
-				if (std::find(indexList.begin(), indexList.end(), toIndex) == indexList.end()) {
-					q.push(toNode);
-					indexList.push_back(toIndex);
+
+				//toNodeがqの中にまだないものだった場合のみqに入れる
+				bool foundInList = false;
+				for (auto &x : q) {
+					if (x == toNode) {
+						foundInList = true;
+						break;
+					}
+				}
+				if (!foundInList) {
+					q.push_back(toNode);
 				}
 			}
 		}
