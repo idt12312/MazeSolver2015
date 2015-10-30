@@ -33,10 +33,14 @@ void Maze::clear()
 		wall[0][i] |= SOUTH | DONE_SOUTH;
 		wall[i][0] |= WEST | DONE_WEST;
 	}
+
+	dirty = true;
 }
 
 bool Maze::loadFromFile(const char *_filename)
 {
+	dirty = true;
+
 	FILE *inputFile;
 	inputFile = fopen(_filename, "r");
 	if (inputFile == NULL) {
@@ -75,6 +79,8 @@ bool Maze::loadFromFile(const char *_filename)
 
 void Maze::loadFromArray(const char asciiData[MAZE_SIZE+1][MAZE_SIZE+1])
 {
+	dirty = true;
+
 	for (int i=0;i<MAZE_SIZE;i++) {
 		for (int j=0;j<MAZE_SIZE;j++) {
 			char ch = asciiData[MAZE_SIZE-1-i][j];
@@ -157,6 +163,8 @@ void Maze::printStepMap() const
 
 void Maze::updateWall(const IndexVec &cur, const Direction& newState, bool forceSetDone)
 {
+	dirty = true;
+
 	if (forceSetDone) wall[cur.y][cur.x] |= newState | (uint8_t)0xf0;
 	else wall[cur.y][cur.x] |= newState;
 
@@ -174,8 +182,12 @@ void Maze::updateWall(const IndexVec &cur, const Direction& newState, bool force
 	}
 }
 
-void Maze::updateStepMap(const IndexVec &dist)
+void Maze::updateStepMap(const IndexVec &dist, bool onlyUseFoundWall)
 {
+	if (!dirty && dist == lastStepMapDist && onlyUseFoundWall == lastOnlyUseFoundWall) return;
+	lastStepMapDist = dist;
+	lastOnlyUseFoundWall = onlyUseFoundWall;
+
 	memset(&stepMap, 0xff, sizeof(uint8_t)*MAZE_SIZE*MAZE_SIZE);
 	stepMap[dist.y][dist.x] = 0;
 
@@ -190,6 +202,8 @@ void Maze::updateStepMap(const IndexVec &dist)
 		for (int i=0;i<4;i++) {
 			const IndexVec scanIndex = cur + IndexVec::vecDir[i];
 			if (!cur_wall[i] && stepMap[scanIndex.y][scanIndex.x] > stepMap[cur.y][cur.x] +1) {
+				//未探索壁をどうするか
+				if (onlyUseFoundWall && !cur_wall[i+4]) continue;
 				stepMap[scanIndex.y][scanIndex.x] = stepMap[cur.y][cur.x] +1;
 				q.push(scanIndex);
 			}

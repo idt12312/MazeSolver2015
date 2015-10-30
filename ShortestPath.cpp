@@ -3,11 +3,11 @@
 #include <math.h>
 #include <utility>
 
-#include <queue>
 #include <algorithm>
 
 #include "MazeSolver_conf.h"
 #include "ShortestPath.h"
+
 
 int ShortestPath::calcShortestDistancePath(const IndexVec &start, const IndexVec &goal, bool onlyUseFoundWall)
 {
@@ -16,86 +16,40 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const IndexVec
 	return calcShortestDistancePath(start, goalList,onlyUseFoundWall);
 }
 
-//Dijkstra's algorithm
+
 int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::list<IndexVec> &goalList, bool onlyUseFoundWall)
 {
-	for (int i=0;i<MAZE_SIZE;i++) {
-		for (int j=0;j<MAZE_SIZE;j++) {
-			node[i][j].from = 0;
-			node[i][j].minCost = 0;
-		}
-	}
-
 	shortestDistancePath.clear();
-	node[start.y][start.x].minCost = 1;
-	std::priority_queue<Node*, std::vector<Node*>, Node::PointerLess> q;
-	std::list<IndexVec> indexList;
 
-	q.push(&node[start.y][start.x]);
-	indexList.push_back(start);
+	maze->updateStepMap(goalList.front(), onlyUseFoundWall);
 
-	while (!q.empty()) {
-		Node* doneNode = q.top(); q.pop();
+	if (maze->getStepMap(start) == 0xff) return false;
 
-		//取り出したdoneNodeにあたるindexListの要素を消す
-		auto it = std::find(indexList.begin(), indexList.end(), doneNode->index);
-		if (it != indexList.end()) {
-			it = indexList.erase(it);
+	//歩数マップを下る方向に
+	IndexVec cur = start;
+	while (1) {
+		shortestDistancePath.push_back(cur);
+
+		//goalListのどこかにたどり着いたらおわり
+		auto it = std::find(goalList.begin(), goalList.end(), cur);
+		if (it != goalList.end()) {
+			break;
 		}
 
-
-		const IndexVec cur = doneNode->index;
+		const uint8_t curStep = maze->getStepMap(cur);
 		for (int i=0;i<4;i++) {
-			//壁がある
 			if (maze->getWall(cur)[i]) continue;
-			//未探索の壁がある
-			if (onlyUseFoundWall && !maze->getWall(cur)[i+4]) continue;
 
-			if (!cur.canSum(IndexVec::vecDir[i])) continue;
-			IndexVec toIndex(cur + IndexVec::vecDir[i]);
-
-			const int16_t cost = doneNode->minCost + 1;
-			Node* toNode = &node[toIndex.y][toIndex.x];
-			if (toNode->minCost == 0  || cost < toNode->minCost) {
-				toNode->minCost = cost;
-				toNode->from = Direction(0x01<<i);
-				if (std::find(indexList.begin(), indexList.end(), toIndex) == indexList.end()) {
-					q.push(toNode);
-					indexList.push_back(toIndex);
+			if (cur.canSum(IndexVec::vecDir[i])) {
+				const IndexVec neighbor = cur + IndexVec::vecDir[i];
+				const uint8_t neighborStep = maze->getStepMap(neighbor);
+				if (neighborStep == curStep-1) {
+					cur = neighbor;
+					break;
 				}
 			}
 		}
 	}
-
-	IndexVec nearestGoal;
-	uint8_t minCost = 0xff;
-	for (auto &goal : goalList) {
-		if (node[goal.y][goal.x].from != 0 && node[goal.y][goal.x].minCost < minCost) {
-			minCost = node[goal.y][goal.x].minCost;
-			nearestGoal = goal;
-		}
-	}
-	//ゴールまで行けなかった
-	if (minCost == 0xff) {
-		return false;
-	}
-
-	needToSearchWallIndex.clear();
-	IndexVec index(nearestGoal);
-	while (1) {
-		shortestDistancePath.push_back(index);
-		if (index == start) break;
-		Direction dir = node[index.y][index.x].from;
-
-		for (int i=0;i<4;i++) {
-			if (dir[i]) {
-				index += IndexVec::vecDir[(i+2)%4];
-				continue;
-			}
-		}
-	}
-
-	std::reverse(shortestDistancePath.begin(), shortestDistancePath.end());
 
 	return true;
 }
@@ -314,7 +268,7 @@ int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<In
 	for (int i=k_shortestDistancePath.size()-1;i>=0;i--) {
 		const int length = k_shortestDistancePath[i].size();
 		const float cost = evalOperationList(convertOperationList(k_shortestDistancePath[i]));
-		printf("dist %d\tcost %f\n", length, cost);
+		//printf("dist %d\tcost %f\n", length, cost);
 		if (cost < minCost) {
 			minCost = cost;
 			shortestTimePath_index = i;
@@ -327,6 +281,7 @@ int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<In
 	shortestTimePath_operationList.assign(opList.begin(),opList.end());
 
 	//デバッグ用
+	/*
 	for (auto operation : shortestTimePath_operationList) {
 		if (operation.op == Operation::FORWARD) printf("F");
 		if (operation.op == Operation::TURN_LEFT90) printf("L");
@@ -334,6 +289,7 @@ int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<In
 		printf("%d ",operation.n);
 	}
 	printf("\n");
+	*/
 
 	return true;
 }

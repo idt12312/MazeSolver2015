@@ -36,30 +36,12 @@ struct Operation {
 /**************************************************************
  * ShortestPath
  *	最短経路あたりのアルゴリズム
- *	・Dijkstra'sAlgorithmによる最短経路の計算
+ *	・歩数マップによる最短経路の計算
  *	・Yes'sAlgorithmによるk最短経路の計算
  *	・ロボットの走行パラメータに基づく経路走行時間の見積もり
  **************************************************************/
 class ShortestPath {
 private:
-
-	//Dijkstraで計算するときに使う
-	//経路のコストを計算する用
-	struct __attribute__ ((__packed__)) Node {
-		IndexVec index;
-		uint8_t minCost;
-		Direction from;
-
-		//Node*に対する比較演算子<
-		//Dijkstra'sAlgorithmの中のpriority_queueで使う
-		struct PointerLess {
-			bool operator()(const Node* lhs, const Node* rhs) const
-			{ return lhs->minCost < rhs->minCost; }
-		};
-	};
-
-	Node node[MAZE_SIZE][MAZE_SIZE];
-
 	Maze *maze;
 
 	//色々と計算した経路を保存しとく
@@ -91,14 +73,6 @@ public:
 		shortestDistancePath.clear();
 		needToSearchWallIndex.clear();
 		shortestTimePath_index=-1;
-		for (int i=0;i<MAZE_SIZE;i++) {
-			for (int j=0;j<MAZE_SIZE;j++) {
-				node[i][j].index.x = j;
-				node[i][j].index.y = i;
-				node[i][j].from = 0;
-				node[i][j].minCost = 0;
-			}
-		}
 	}
 
 	//startからgoalへの最短経路を計算し、shortestDistancePathに格納する
