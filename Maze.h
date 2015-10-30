@@ -146,9 +146,13 @@ private:
 	Direction wall[MAZE_SIZE][MAZE_SIZE];
 	uint8_t stepMap[MAZE_SIZE][MAZE_SIZE];
 
+	bool dirty;
+	bool lastOnlyUseFoundWall;
+	IndexVec lastStepMapDist;
+
 public:
-	Maze(){ clear(); }
-	Maze(const Maze &obj)
+	Maze() : dirty(true) { clear(); }
+	Maze(const Maze &obj) : dirty(true)
 	{
 		for (int i=0;i<MAZE_SIZE;i++) {
 			for (int j=0;j<MAZE_SIZE;j++) {
@@ -191,7 +195,7 @@ public:
 	//歩数マップの更新
 	//適宜歩数マップが必要になるときにこれを呼んで歩数マップを更新してから参照する
 	//distの座標の歩数マップを0として計算する
-	void updateStepMap(const IndexVec &dist);
+	void updateStepMap(const IndexVec &dist, bool onlyUseFoundWall = false);
 
 	//指定座標の壁情報を取得
 	inline const Direction &getWall(const IndexVec &index) const { return wall[index.y][index.x]; }

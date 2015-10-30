@@ -63,7 +63,7 @@ void test_KShortestPath(const char *filename)
 	goalList.push_back(MAZE_GOAL2);
 	goalList.push_back(MAZE_GOAL3);
 	goalList.push_back(MAZE_GOAL4);
-	path.calcKShortestDistancePath(IndexVec(0,0), goalList, 2, false);
+	path.calcKShortestDistancePath(IndexVec(0,0), goalList, 5, false);
 
 	int cnt = 0;
 	for (auto &p : path.getKShortestDistancePath()) {
