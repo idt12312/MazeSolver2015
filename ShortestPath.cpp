@@ -49,7 +49,8 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 		q.erase(maxCost_it);
 
 		const IndexVec cur = doneNode->index;
-		/*
+
+
 		printf("cur %d %d\n",cur.x,cur.y);
 		uint8_t field_cost[MAZE_SIZE][MAZE_SIZE] = {0};
 		for (int i=0;i<MAZE_SIZE;i++) {
@@ -58,7 +59,7 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 			}
 		}
 		maze->printWall(field_cost);
-		*/
+
 
 		for (int i=0;i<4;i++) {
 			//壁がある
@@ -86,18 +87,29 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 
 			//次の分岐点 or 枝の末端までtoIndexとcostをすすめる
 			//TODO:なんかゴールのところでループする
+			bool flag = false;
 			while (maze->getWall(toIndex).nWall() == 2 ) {
+				if (flag) break;
 				if (maze->getWall(toIndex).nWall() == 3) {
 					//枝の末端部分
 					//コストは書き入れるべきだが、qにはいれない
 					break;
 				}
 
+				auto isGoal = std::find(goalList.begin(), goalList.end(), toIndex);
+				if (isGoal != goalList.end()) {
+					break;
+				}
+
 				for (int j=0;j<4;j++) {
 					//TODO:canSumではなく、一旦足してみてから範囲内に収まっているかをチェックしたほうがはやそう
-					if (!maze->getWall(toIndex)[j] && toIndex.canSum(IndexVec::vecDir[j])) {
+					if (maze->getWall(toIndex)[j]) continue;
+					if (onlyUseFoundWall && !maze->getWall(toIndex)[i+4]) continue;
+
+					if (toIndex.canSum(IndexVec::vecDir[j])) {
 						//来た道をもどらないようにする
 						if (toIndex + IndexVec::vecDir[j] != prevIndex) {
+							if (!maze->getWall(toIndex)[i+4]) flag = true;
 							prevIndex = toIndex;
 							toIndex += IndexVec::vecDir[j];
 							indexList.push(toIndex);
