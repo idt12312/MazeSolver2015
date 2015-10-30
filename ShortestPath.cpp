@@ -3,12 +3,11 @@
 #include <math.h>
 #include <utility>
 
-#include <stack>
-#include <queue>
 #include <algorithm>
 
 #include "MazeSolver_conf.h"
 #include "ShortestPath.h"
+
 
 int ShortestPath::calcShortestDistancePath(const IndexVec &start, const IndexVec &goal, bool onlyUseFoundWall)
 {
@@ -17,181 +16,40 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const IndexVec
 	return calcShortestDistancePath(start, goalList,onlyUseFoundWall);
 }
 
-//Dijkstra's algorithm
+
 int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::list<IndexVec> &goalList, bool onlyUseFoundWall)
 {
-	for (int i=0;i<MAZE_SIZE;i++) {
-		for (int j=0;j<MAZE_SIZE;j++) {
-			node[i][j].from = 0;
-			node[i][j].minCost = 0;
-		}
-	}
-
-
 	shortestDistancePath.clear();
-	node[start.y][start.x].minCost = 1;
 
-	//priority queueじゃなくてlistを使う
-	//Node*の値はpushしたあとに勝手に変わる可能性があるため
-	std::list<Node*> q;
+	maze->updateStepMap(goalList.front(), onlyUseFoundWall);
 
-	q.push_back(&node[start.y][start.x]);
+	if (maze->getStepMap(start) == 0xff) return false;
 
-	while (!q.empty()) {
-		//最大のものをイテレータで取り出して、取り出したら消す
-		auto maxCost_it = q.begin();
-		for (auto it = q.begin(); it !=q.end(); it++) {
-			if ((*it)->minCost > (*maxCost_it)->minCost) {
-				maxCost_it = it;
-			}
-		}
-		const Node* doneNode = *maxCost_it;
-		q.erase(maxCost_it);
-
-		const IndexVec cur = doneNode->index;
-
-
-		printf("cur %d %d\n",cur.x,cur.y);
-		uint8_t field_cost[MAZE_SIZE][MAZE_SIZE] = {0};
-		for (int i=0;i<MAZE_SIZE;i++) {
-			for (int j=0;j<MAZE_SIZE;j++) {
-				field_cost[i][j] = node[i][j].minCost;
-			}
-		}
-		maze->printWall(field_cost);
-
-
-		for (int i=0;i<4;i++) {
-			//壁がある
-			if (maze->getWall(cur)[i]) continue;
-			//未探索の壁がある
-			if (onlyUseFoundWall && !maze->getWall(cur)[i+4]) continue;
-
-			if (!cur.canSum(IndexVec::vecDir[i])) continue;
-			IndexVec toIndex(cur + IndexVec::vecDir[i]);
-
-			if (maze->getWall(toIndex).nWall() == 3) {
-				//枝の末端部分
-				//コストは書き入れるべきだが、qにはいれない
-				continue;
-			}
-
-			//道が分岐しない、1本道の部分は分岐点に到達するまでcostを書き込みつつたどる
-			int16_t cost = doneNode->minCost + 1;
-			int last_j = i;
-			IndexVec prevIndex = cur;
-			std::stack<IndexVec> indexList;
-			indexList.push(cur);
-			indexList.push(toIndex);
-
-
-			//次の分岐点 or 枝の末端までtoIndexとcostをすすめる
-			//TODO:なんかゴールのところでループする
-			bool flag = false;
-			while (maze->getWall(toIndex).nWall() == 2 ) {
-				if (flag) break;
-				if (maze->getWall(toIndex).nWall() == 3) {
-					//枝の末端部分
-					//コストは書き入れるべきだが、qにはいれない
-					break;
-				}
-
-				auto isGoal = std::find(goalList.begin(), goalList.end(), toIndex);
-				if (isGoal != goalList.end()) {
-					break;
-				}
-
-				for (int j=0;j<4;j++) {
-					//TODO:canSumではなく、一旦足してみてから範囲内に収まっているかをチェックしたほうがはやそう
-					if (maze->getWall(toIndex)[j]) continue;
-					if (onlyUseFoundWall && !maze->getWall(toIndex)[i+4]) continue;
-
-					if (toIndex.canSum(IndexVec::vecDir[j])) {
-						//来た道をもどらないようにする
-						if (toIndex + IndexVec::vecDir[j] != prevIndex) {
-							if (!maze->getWall(toIndex)[i+4]) flag = true;
-							prevIndex = toIndex;
-							toIndex += IndexVec::vecDir[j];
-							indexList.push(toIndex);
-							cost++;
-							last_j = j;
-							break;
-						}
-					}
-				}
-			}
-
-
-			Node* toNode = &node[toIndex.y][toIndex.x];
-			//cost < だと同じ距離の道が列挙されなくなったからcost <= にした
-			if (toNode->minCost == 0  || cost <= toNode->minCost) {
-				toNode->minCost = cost;
-				toNode->from = Direction(0x01<<last_j);
-
-
-				//ここでcurからtoIndexまでのノードにcostとfromを書き入れていく
-				IndexVec prevIndex = indexList.top(); indexList.pop();
-				while (!indexList.empty()) {
-					const IndexVec curIndex = indexList.top(); indexList.pop();
-					const IndexVec diff = prevIndex - curIndex;
-					Direction fromDir;
-					for (int j=0;j<4;j++) {
-						if (IndexVec::vecDir[j] == diff) {
-							fromDir = Direction(0x01<<j);
-							break;
-						}
-					}
-					node[prevIndex.y][prevIndex.x].from = fromDir;
-					node[prevIndex.y][prevIndex.x].minCost = cost;
-					cost--;
-
-					prevIndex = curIndex;
-				}
-
-				//toNodeがqの中にまだないものだった場合のみqに入れる
-				bool foundInList = false;
-				for (auto &x : q) {
-					if (x == toNode) {
-						foundInList = true;
-						break;
-					}
-				}
-				if (!foundInList) {
-					q.push_back(toNode);
-				}
-			}
-		}
-	}
-
-	IndexVec nearestGoal;
-	uint8_t minCost = 0xff;
-	for (auto &goal : goalList) {
-		if (node[goal.y][goal.x].from != 0 && node[goal.y][goal.x].minCost < minCost) {
-			minCost = node[goal.y][goal.x].minCost;
-			nearestGoal = goal;
-		}
-	}
-	//ゴールまで行けなかった
-	if (minCost == 0xff) {
-		return false;
-	}
-
-	needToSearchWallIndex.clear();
-	IndexVec index(nearestGoal);
+	//歩数マップを下る方向に
+	IndexVec cur = start;
 	while (1) {
-		shortestDistancePath.push_back(index);
-		if (index == start) break;
-		Direction dir = node[index.y][index.x].from;
+		shortestDistancePath.push_back(cur);
 
+		//goalListのどこかにたどり着いたらおわり
+		auto it = std::find(goalList.begin(), goalList.end(), cur);
+		if (it != goalList.end()) {
+			break;
+		}
+
+		const uint8_t curStep = maze->getStepMap(cur);
 		for (int i=0;i<4;i++) {
-			if (dir[i]) {
-				index += IndexVec::vecDir[(i+2)%4];
-				break;
+			if (maze->getWall(cur)[i]) continue;
+
+			if (cur.canSum(IndexVec::vecDir[i])) {
+				const IndexVec neighbor = cur + IndexVec::vecDir[i];
+				const uint8_t neighborStep = maze->getStepMap(neighbor);
+				if (neighborStep == curStep-1) {
+					cur = neighbor;
+					break;
+				}
 			}
 		}
 	}
-
-	std::reverse(shortestDistancePath.begin(), shortestDistancePath.end());
 
 	return true;
 }
@@ -410,7 +268,7 @@ int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<In
 	for (int i=k_shortestDistancePath.size()-1;i>=0;i--) {
 		const int length = k_shortestDistancePath[i].size();
 		const float cost = evalOperationList(convertOperationList(k_shortestDistancePath[i]));
-		printf("dist %d\tcost %f\n", length, cost);
+		//printf("dist %d\tcost %f\n", length, cost);
 		if (cost < minCost) {
 			minCost = cost;
 			shortestTimePath_index = i;
@@ -423,6 +281,7 @@ int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<In
 	shortestTimePath_operationList.assign(opList.begin(),opList.end());
 
 	//デバッグ用
+	/*
 	for (auto operation : shortestTimePath_operationList) {
 		if (operation.op == Operation::FORWARD) printf("F");
 		if (operation.op == Operation::TURN_LEFT90) printf("L");
@@ -430,6 +289,7 @@ int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<In
 		printf("%d ",operation.n);
 	}
 	printf("\n");
+	*/
 
 	return true;
 }
