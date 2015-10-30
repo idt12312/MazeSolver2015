@@ -95,18 +95,9 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 
 
 	if (state == Agent::SEARCHING_REACHED_GOAL) {
-		//distIndexListのどれかの座標に到達したらそれを消す
-		for (auto it = distIndexList.begin();it!=distIndexList.end();) {
-			if (*it == cur){
-				it = distIndexList.erase(it);
-				continue;
-			}
-			it++;
-		}
-		//本当はdistIndexListのどこかに到達するたびにdistLindexListを更新したい
-		//計算時間的に無理なので、
-		//distIndexListが空 or 目標地点が到達不能だと分かったら更新
-		if (distIndexList.empty() || calcNextDirection(cur, dist) == 0) {
+		//distIndexListのどれかに到達した or 目標地点が到達不能だと分かったら更新
+		auto it = std::find(distIndexList.begin(), distIndexList.end(), cur);
+		if (it != distIndexList.end() || calcNextDirection(cur, dist) == 0) {
 			distIndexList.clear();
 			path.calcKShortestDistancePath(IndexVec(0,0), mazeGoalList,SEARCH_DEPTH1, false);
 			path.calcNeedToSearchWallIndex();
@@ -119,19 +110,18 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 		maze->updateStepMap(cur);
 
 		//distIndexListの中から現在座標に一番近い近いものをdistに入れる
-		{
-			int minDistance = INT32_MAX;
-			std::list<IndexVec>::iterator it_nearestDist;
-			for (auto it=distIndexList.begin();it!=distIndexList.end();it++) {
-				int stepDiff = maze->getStepMap(cur) - maze->getStepMap(*it);
-				if (stepDiff<0) stepDiff = -stepDiff;
-				if (stepDiff < minDistance) {
-					minDistance = stepDiff;
-					it_nearestDist = it;
-				}
+		int minDistance = INT32_MAX;
+		std::list<IndexVec>::iterator it_nearestDist;
+		for (auto it=distIndexList.begin();it!=distIndexList.end();it++) {
+			int stepDiff = maze->getStepMap(cur) - maze->getStepMap(*it);
+			if (stepDiff<0) stepDiff = -stepDiff;
+			if (stepDiff < minDistance) {
+				minDistance = stepDiff;
+				it_nearestDist = it;
 			}
-			dist = *it_nearestDist;
 		}
+		dist = *it_nearestDist;
+
 	}
 
 

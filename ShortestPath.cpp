@@ -21,16 +21,16 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 {
 	shortestDistancePath.clear();
 
-	//歩数マップを下る方向に
-	IndexVec cur = start;
-
 	maze->updateStepMap(goalList.front(), onlyUseFoundWall);
 
 	if (maze->getStepMap(start) == 0xff) return false;
 
+	//歩数マップを下る方向に
+	IndexVec cur = start;
 	while (1) {
 		shortestDistancePath.push_back(cur);
 
+		//goalListのどこかにたどり着いたらおわり
 		auto it = std::find(goalList.begin(), goalList.end(), cur);
 		if (it != goalList.end()) {
 			break;

@@ -202,6 +202,7 @@ void Maze::updateStepMap(const IndexVec &dist, bool onlyUseFoundWall)
 		for (int i=0;i<4;i++) {
 			const IndexVec scanIndex = cur + IndexVec::vecDir[i];
 			if (!cur_wall[i] && stepMap[scanIndex.y][scanIndex.x] > stepMap[cur.y][cur.x] +1) {
+				//未探索壁をどうするか
 				if (onlyUseFoundWall && !cur_wall[i+4]) continue;
 				stepMap[scanIndex.y][scanIndex.x] = stepMap[cur.y][cur.x] +1;
 				q.push(scanIndex);

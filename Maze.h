@@ -146,6 +146,8 @@ private:
 	Direction wall[MAZE_SIZE][MAZE_SIZE];
 	uint8_t stepMap[MAZE_SIZE][MAZE_SIZE];
 
+	//無駄な計算をしないために、前回歩数マップを計算した時の情報を覚えとく
+	//もし前回と同じ状況ならば計算結果は変わらないので実行しない
 	bool dirty;
 	bool lastOnlyUseFoundWall;
 	IndexVec lastStepMapDist;
@@ -195,6 +197,7 @@ public:
 	//歩数マップの更新
 	//適宜歩数マップが必要になるときにこれを呼んで歩数マップを更新してから参照する
 	//distの座標の歩数マップを0として計算する
+	//onlyUseFoundWall=trueにすると未探索の壁は通れないものとして歩数マップを計算する
 	void updateStepMap(const IndexVec &dist, bool onlyUseFoundWall = false);
 
 	//指定座標の壁情報を取得
