@@ -3,6 +3,7 @@
 #include <math.h>
 #include <utility>
 
+#include <stack>
 #include <queue>
 #include <algorithm>
 
@@ -26,6 +27,7 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 		}
 	}
 
+
 	shortestDistancePath.clear();
 	node[start.y][start.x].minCost = 1;
 
@@ -36,14 +38,28 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 	q.push_back(&node[start.y][start.x]);
 
 	while (!q.empty()) {
-		//ソートして、一番大きい物(back)を取り出す
-		q.sort(
-				[](const Node* lhs, const Node* rhs) { return lhs->minCost < rhs->minCost; }
-		);
-		Node* doneNode = q.back(); q.pop_back();
-
+		//最大のものをイテレータで取り出して、取り出したら消す
+		auto maxCost_it = q.begin();
+		for (auto it = q.begin(); it !=q.end(); it++) {
+			if ((*it)->minCost > (*maxCost_it)->minCost) {
+				maxCost_it = it;
+			}
+		}
+		const Node* doneNode = *maxCost_it;
+		q.erase(maxCost_it);
 
 		const IndexVec cur = doneNode->index;
+		/*
+		printf("cur %d %d\n",cur.x,cur.y);
+		uint8_t field_cost[MAZE_SIZE][MAZE_SIZE] = {0};
+		for (int i=0;i<MAZE_SIZE;i++) {
+			for (int j=0;j<MAZE_SIZE;j++) {
+				field_cost[i][j] = node[i][j].minCost;
+			}
+		}
+		maze->printWall(field_cost);
+		*/
+
 		for (int i=0;i<4;i++) {
 			//壁がある
 			if (maze->getWall(cur)[i]) continue;
@@ -53,13 +69,72 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 			if (!cur.canSum(IndexVec::vecDir[i])) continue;
 			IndexVec toIndex(cur + IndexVec::vecDir[i]);
 
-			//TODO:道が分岐しない、1本道の部分は分岐点に到達するまでcostを書き込みつつたどる
-			//毎回priority queueに突っ込んでると時間が無駄そう
-			const int16_t cost = doneNode->minCost + 1;
+			if (maze->getWall(toIndex).nWall() == 3) {
+				//枝の末端部分
+				//コストは書き入れるべきだが、qにはいれない
+				continue;
+			}
+
+			//道が分岐しない、1本道の部分は分岐点に到達するまでcostを書き込みつつたどる
+			int16_t cost = doneNode->minCost + 1;
+			int last_j = i;
+			IndexVec prevIndex = cur;
+			std::stack<IndexVec> indexList;
+			indexList.push(cur);
+			indexList.push(toIndex);
+
+
+			//次の分岐点 or 枝の末端までtoIndexとcostをすすめる
+			//TODO:なんかゴールのところでループする
+			while (maze->getWall(toIndex).nWall() == 2 ) {
+				if (maze->getWall(toIndex).nWall() == 3) {
+					//枝の末端部分
+					//コストは書き入れるべきだが、qにはいれない
+					break;
+				}
+
+				for (int j=0;j<4;j++) {
+					//TODO:canSumではなく、一旦足してみてから範囲内に収まっているかをチェックしたほうがはやそう
+					if (!maze->getWall(toIndex)[j] && toIndex.canSum(IndexVec::vecDir[j])) {
+						//来た道をもどらないようにする
+						if (toIndex + IndexVec::vecDir[j] != prevIndex) {
+							prevIndex = toIndex;
+							toIndex += IndexVec::vecDir[j];
+							indexList.push(toIndex);
+							cost++;
+							last_j = j;
+							break;
+						}
+					}
+				}
+			}
+
+
 			Node* toNode = &node[toIndex.y][toIndex.x];
-			if (toNode->minCost == 0  || cost < toNode->minCost) {
+			//cost < だと同じ距離の道が列挙されなくなったからcost <= にした
+			if (toNode->minCost == 0  || cost <= toNode->minCost) {
 				toNode->minCost = cost;
-				toNode->from = Direction(0x01<<i);
+				toNode->from = Direction(0x01<<last_j);
+
+
+				//ここでcurからtoIndexまでのノードにcostとfromを書き入れていく
+				IndexVec prevIndex = indexList.top(); indexList.pop();
+				while (!indexList.empty()) {
+					const IndexVec curIndex = indexList.top(); indexList.pop();
+					const IndexVec diff = prevIndex - curIndex;
+					Direction fromDir;
+					for (int j=0;j<4;j++) {
+						if (IndexVec::vecDir[j] == diff) {
+							fromDir = Direction(0x01<<j);
+							break;
+						}
+					}
+					node[prevIndex.y][prevIndex.x].from = fromDir;
+					node[prevIndex.y][prevIndex.x].minCost = cost;
+					cost--;
+
+					prevIndex = curIndex;
+				}
 
 				//toNodeがqの中にまだないものだった場合のみqに入れる
 				bool foundInList = false;
@@ -99,7 +174,7 @@ int ShortestPath::calcShortestDistancePath(const IndexVec &start, const std::lis
 		for (int i=0;i<4;i++) {
 			if (dir[i]) {
 				index += IndexVec::vecDir[(i+2)%4];
-				continue;
+				break;
 			}
 		}
 	}

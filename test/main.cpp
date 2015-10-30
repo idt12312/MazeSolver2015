@@ -143,11 +143,11 @@ int main(int argc, char **argv)
 
 	}
 
-	//test_Maze(0);
+	//test_Maze(argv[1]);
 	//test_Size();
 	//test_Agent(argv[1]);
-	test_ShortestPath(argv[1]);
-	//test_KShortestPath(argv[1]);
+	//test_ShortestPath(argv[1]);
+	test_KShortestPath(argv[1]);
 	//test_ShortestPathInTime(argv[1]);
 
 	printf("finish\n");

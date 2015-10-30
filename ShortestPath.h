@@ -49,13 +49,6 @@ private:
 		IndexVec index;
 		uint8_t minCost;
 		Direction from;
-
-		//Node*に対する比較演算子<
-		//Dijkstra'sAlgorithmの中のpriority_queueで使う
-		struct PointerLess {
-			bool operator()(const Node* lhs, const Node* rhs) const
-			{ return lhs->minCost < rhs->minCost; }
-		};
 	};
 
 	Node node[MAZE_SIZE][MAZE_SIZE];
