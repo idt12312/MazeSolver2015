@@ -152,8 +152,8 @@ private:
 	IndexVec lastStepMapDist;
 
 public:
-	Maze() : dirty(true) { clear(); }
-	Maze(const Maze &obj) : dirty(true)
+	Maze() : dirty(true), lastOnlyUseFoundWall(true) { clear(); }
+	Maze(const Maze &obj) : dirty(true), lastOnlyUseFoundWall(true)
 	{
 		for (int i=0;i<MAZE_SIZE;i++) {
 			for (int j=0;j<MAZE_SIZE;j++) {
