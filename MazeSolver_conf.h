@@ -8,10 +8,9 @@
 #define MAZE_SIZE 16
 
 //迷路のゴール座標
-#define MAZE_GOAL1 IndexVec(7,7)
-#define MAZE_GOAL2 IndexVec(7,8)
-#define MAZE_GOAL3 IndexVec(8,7)
-#define MAZE_GOAL4 IndexVec(8,8)
+//ゴールとしたい座標を並べる
+//4個でなくてもよい
+#define MAZE_GOAL_LIST { IndexVec(7,7), IndexVec(7,8), IndexVec(8,7), IndexVec(8,8) }
 
 
 /****************************************

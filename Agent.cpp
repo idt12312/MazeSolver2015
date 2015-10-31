@@ -14,12 +14,6 @@ void Agent::reset()
 	dist.x = 0;
 	dist.y = 0;
 	nextDir = 0;
-
-	mazeGoalList.clear();
-	mazeGoalList.push_back(MAZE_GOAL1);
-	mazeGoalList.push_back(MAZE_GOAL2);
-	mazeGoalList.push_back(MAZE_GOAL3);
-	mazeGoalList.push_back(MAZE_GOAL4);
 }
 
 Direction Agent::calcNextDirection(const IndexVec &cur, const IndexVec &_dist)
@@ -72,7 +66,7 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 
 	if (state == Agent::IDLE) {
 		distIndexList.clear();
-		distIndexList.assign(mazeGoalList.begin(), mazeGoalList.end());
+		distIndexList.assign(MAZE_GOAL_LIST);
 
 		dist = distIndexList.front();
 		state = Agent::SEARCHING_NOT_GOAL;
@@ -99,7 +93,7 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 		auto it = std::find(distIndexList.begin(), distIndexList.end(), cur);
 		if (it != distIndexList.end() || calcNextDirection(cur, dist) == 0) {
 			distIndexList.clear();
-			path.calcKShortestDistancePath(IndexVec(0,0), mazeGoalList,SEARCH_DEPTH1, false);
+			path.calcKShortestDistancePath(IndexVec(0,0), MAZE_GOAL_LIST, SEARCH_DEPTH1, false);
 			path.calcNeedToSearchWallIndex();
 			distIndexList.assign(path.getNeedToSearchIndex().begin(), path.getNeedToSearchIndex().end());
 			if (distIndexList.empty()) {
@@ -146,5 +140,5 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 void Agent::caclRunSequence()
 {
 	if (state != Agent::FINISHED) return ;
-	path.calcShortestTimePath(IndexVec(0,0), mazeGoalList, SEARCH_DEPTH2, true);
+	path.calcShortestTimePath(IndexVec(0,0), MAZE_GOAL_LIST, SEARCH_DEPTH2, true);
 }

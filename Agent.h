@@ -34,9 +34,6 @@ private:
 	Maze* maze;
 	State state;
 
-	//迷路のゴール座標リスト(MazeSolver_conf.hで定義)
-	std::list<IndexVec> mazeGoalList;
-
 	//現在目指している目標座標
 	IndexVec dist;
 

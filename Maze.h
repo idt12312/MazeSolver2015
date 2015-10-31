@@ -140,7 +140,6 @@ struct __attribute__ ((__packed__)) IndexVec {
  *	壁情報と歩数マップを保持する
  *	壁情報はMazeのupdateWallを使って更新をしていく
  **************************************************************/
-//TODO:迷路のサイズが16でないときが未検証
 class Maze {
 private:
 	Direction wall[MAZE_SIZE][MAZE_SIZE];
@@ -153,8 +152,8 @@ private:
 	IndexVec lastStepMapDist;
 
 public:
-	Maze() : dirty(true) { clear(); }
-	Maze(const Maze &obj) : dirty(true)
+	Maze() : dirty(true), lastOnlyUseFoundWall(true) { clear(); }
+	Maze(const Maze &obj) : dirty(true), lastOnlyUseFoundWall(true)
 	{
 		for (int i=0;i<MAZE_SIZE;i++) {
 			for (int j=0;j<MAZE_SIZE;j++) {
