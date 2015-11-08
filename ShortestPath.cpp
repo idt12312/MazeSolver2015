@@ -215,12 +215,11 @@ const std::list<Operation> ShortestPath::convertOperationList(const Path &path)
 	if (useDiagonalPath) {
 		std::vector<Operation> opList2;
 		Operation currentDiagOp;
-		for (size_t i=0;i<opList.size()-1;i++) {
+		for (size_t i=0;i<opList.size();i++) {
 			if (opList[i].op == Operation::TURN_RIGHT90 || opList[i].op == Operation::TURN_LEFT90) {
 				Operation::OperationType prevDiagOp = opList[i].op;
 				size_t j = i;
 
-				//printf("i=%d\n",i);
 				while(1) {
 					j++;
 					if (prevDiagOp == Operation::TURN_RIGHT90) {
@@ -241,7 +240,6 @@ const std::list<Operation> ShortestPath::convertOperationList(const Path &path)
 					}
 				}
 
-				//printf("j=%d\n",j);
 				if (j-i > 1) {
 					//RLRL
 					if ((j-i)%2 == 0) {
@@ -278,13 +276,13 @@ const std::list<Operation> ShortestPath::convertOperationList(const Path &path)
 	}
 
 	//FORWARDの圧縮
-	result.push_back(opList[0].op);
+	result.push_back(opList[0]);
 	for (size_t i=1;i<opList.size();i++) {
 		if (opList[i].op == Operation::FORWARD && opList[i].op == result.back().op) {
 			result.back().n++;
 		}
 		else {
-			result.push_back(opList[i].op);
+			result.push_back(opList[i]);
 		}
 	}
 
