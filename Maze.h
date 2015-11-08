@@ -122,6 +122,14 @@ struct __attribute__ ((__packed__)) IndexVec {
 		const int8_t y_abs = y>0?y:-y;
 		return x_abs + y_abs;
 	}
+
+	inline bool isDiag() const
+	{
+		const int8_t x_abs = x>0?x:-x;
+		const int8_t y_abs = y>0?y:-y;
+		return x_abs == 1 && y_abs == 1;
+	}
+
 	inline bool isCorner(){ return x == MAZE_SIZE-1 || x == 0 || y == MAZE_SIZE-1 || y == 0; }
 
 	//便利な定数

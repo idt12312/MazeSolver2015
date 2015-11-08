@@ -20,6 +20,7 @@ typedef std::vector<IndexVec> Path;
 struct Operation {
 	typedef enum {
 		FORWARD,
+		FORWARD_DIAG,
 		TURN_RIGHT90,
 		TURN_RIGHT45,
 		TURN_LEFT90,
@@ -49,6 +50,7 @@ private:
 	std::vector< Path > k_shortestDistancePath;
 	int shortestTimePath_index;
 	std::vector<Operation> shortestTimePath_operationList;
+	float shortestTimePath_cost;
 	std::list<IndexVec> needToSearchWallIndex;
 	const bool useDiagonalPath;
 
@@ -59,6 +61,7 @@ private:
 
 	//Pathを入れるとOperationのリストを返す
 	const std::list<Operation> convertOperationList(const Path &path);
+
 	//Operationのリストから合計コストを計算する
 	float evalOperationList(const std::list<Operation> &actionList);
 
@@ -97,6 +100,7 @@ public:
 	int calcShortestTimePath(const IndexVec &start, const std::list<IndexVec> &goalList, int k, bool onlyUseFoundWall);
 	inline const Path &getShortestTimePath() const { return k_shortestDistancePath[shortestTimePath_index]; }
 	inline const std::vector<Operation> &getShortestTimePathOperation() const { return shortestTimePath_operationList; }
+	inline float getShortestTimePathCost() const { return shortestTimePath_cost; }
 
 	//kShortestDistancePath上の未探索壁がある座標リストを計算する。
 	//この座標が追加で探索すべき座標になる

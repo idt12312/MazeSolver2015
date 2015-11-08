@@ -27,6 +27,9 @@
 //90度曲がるブロックを進むのにかかる時間[s]
 #define TURN90_TIME 	0.7
 
+//45度曲がるブロックを進むのにかかる時間[s]
+#define TURN45_TIME 	0.3
+
 //加速度[m/s^2]
 #define ACCELERATION 	6.0
 

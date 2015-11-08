@@ -74,11 +74,12 @@ void test_ShortestPathInTime(const char *filename)
 	field.loadFromFile(filename);
 	//field.loadFromArray(mazeData_maze);
 
-	ShortestPath path(field);
+	ShortestPath path(field,true);
 	path.calcShortestTimePath(IndexVec(0,0), MAZE_GOAL_LIST, 20, false);
 
 	auto &p = path.getShortestTimePath();
 	printf("length %lu\n", p.size());
+	printf("cost %f\n", path.getShortestTimePathCost());
 	bool route[MAZE_SIZE][MAZE_SIZE] = {false};
 	for (auto &index : p) {
 		route[index.y][index.x] = true;
@@ -130,10 +131,10 @@ int main(int argc, char **argv)
 
 	//test_Maze(argv[1]);
 	//test_Size();
-	test_Agent(argv[1]);
+	//test_Agent(argv[1]);
 	//test_ShortestPath(argv[1]);
 	//test_KShortestPath(argv[1]);
-	//test_ShortestPathInTime(argv[1]);
+	test_ShortestPathInTime(argv[1]);
 
 	printf("finish\n");
 
