@@ -92,6 +92,8 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 		//distIndexListのどれかに到達した or 目標地点が到達不能だと分かったら更新
 		auto it = std::find(distIndexList.begin(), distIndexList.end(), cur);
 		if (it != distIndexList.end() || calcNextDirection(cur, dist) == 0) {
+			//暫定最短経路上の未探索壁のある座標を列挙
+			//それらの座標をdistIndexListにいれる
 			distIndexList.clear();
 			path.calcKShortestDistancePath(IndexVec(0,0), MAZE_GOAL_LIST, SEARCH_DEPTH1, false);
 			path.calcNeedToSearchWallIndex();
@@ -141,4 +143,54 @@ void Agent::caclRunSequence()
 {
 	if (state != Agent::FINISHED) return ;
 	path.calcShortestTimePath(IndexVec(0,0), MAZE_GOAL_LIST, SEARCH_DEPTH2, true);
+}
+
+
+void Agent::resumeAt(State resumeState, Maze &_maze)
+{
+	reset();
+	maze = &_maze;
+
+	if (resumeState == State::IDLE) {
+		state = State::IDLE;
+	}
+
+	else if (resumeState == State::SEARCHING_NOT_GOAL) {
+		distIndexList.assign(MAZE_GOAL_LIST);
+		dist = distIndexList.front();
+		state = State::SEARCHING_NOT_GOAL;
+	}
+
+	else if (resumeState == State::SEARCHING_REACHED_GOAL) {
+		//暫定最短経路上の未探索壁のある座標を列挙
+		//それらの座標をdistIndexListにいれる
+		maze->updateStepMap(IndexVec(0,0));
+		path.calcKShortestDistancePath(IndexVec(0,0), MAZE_GOAL_LIST, SEARCH_DEPTH1, false);
+		path.calcNeedToSearchWallIndex();
+		distIndexList.assign(path.getNeedToSearchIndex().begin(), path.getNeedToSearchIndex().end());
+
+		//distIndexListの中から現在座標に一番近い近いものをdistに入れる
+		int minDistance = INT32_MAX;
+		std::list<IndexVec>::iterator it_nearestDist;
+		for (auto it=distIndexList.begin();it!=distIndexList.end();it++) {
+			int stepDiff = maze->getStepMap(IndexVec(0,0)) - maze->getStepMap(*it);
+			if (stepDiff<0) stepDiff = -stepDiff;
+			if (stepDiff < minDistance) {
+				minDistance = stepDiff;
+				it_nearestDist = it;
+			}
+		}
+		dist = *it_nearestDist;
+
+		state = State::SEARCHING_REACHED_GOAL;
+	}
+
+	else if (resumeState == State::BACK_TO_START) {
+		state = State::FINISHED;
+	}
+
+	else if (resumeState == State::FINISHED) {
+		state = State::FINISHED;
+	}
+
 }
