@@ -90,6 +90,7 @@ public:
 	inline const std::vector<Operation> &getRunSequence() const { return path.getShortestTimePathOperation(); }
 
 	//途中から再開する
+	//再開したいAgentと迷路の状態を渡す
 	void resumeAt(State resumeState, Maze &_maze);
 };
 
