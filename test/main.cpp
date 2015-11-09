@@ -26,7 +26,7 @@ void test_Maze(const char *filename)
 {
 	Maze field;
 	field.loadFromFile(filename);
-	//field.loadFromArray(mazeData_99test);
+	//field.loadFromArray(mazeData_66test);
 	field.printWall();
 }
 
@@ -34,7 +34,7 @@ void test_ShortestPath(const char *filename)
 {
 	Maze field;
 	field.loadFromFile(filename);
-	//field.loadFromArray(mazeData_99test);
+	//field.loadFromArray(mazeData_66test);
 
 	ShortestPath path(field);
 	path.calcShortestDistancePath(IndexVec(0,0), MAZE_GOAL_LIST, false);
@@ -50,7 +50,7 @@ void test_KShortestPath(const char *filename)
 {
 	Maze field;
 	field.loadFromFile(filename);
-	//field.loadFromArray(mazeData_99test);
+	//field.loadFromArray(mazeData_66test);
 
 	ShortestPath path(field);
 	path.calcKShortestDistancePath(IndexVec(0,0), MAZE_GOAL_LIST, 5, false);
@@ -92,7 +92,7 @@ void test_Agent(const char *filename)
 	Maze field;
 	Maze mazeInRobot;
 	field.loadFromFile(filename);
-	//field.loadFromArray(mazeData_99test);
+	//field.loadFromArray(mazeData_66test);
 
 	Agent agent(mazeInRobot);
 

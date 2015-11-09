@@ -6,32 +6,9 @@
 #include <list>
 #include <vector>
 #include "Maze.h"
+#include "Operation.h"
 
 typedef std::vector<IndexVec> Path;
-
-
-
-/**************************************************************
- * Operation
- *	ロボットがすべき動作を表現
- *	走行ルートを表現するのに使う
- *	opが動きの種類で、「opをn回実行する」という意味
- **************************************************************/
-struct Operation {
-	typedef enum {
-		FORWARD,
-		FORWARD_DIAG,
-		TURN_RIGHT90,
-		TURN_RIGHT45,
-		TURN_LEFT90,
-		TURN_LEFT45,
-		STOP,
-	} OperationType;
-
-	OperationType op;
-	uint8_t n;
-	Operation(OperationType _op = STOP, uint8_t _n = 1) : op(_op), n(_n) {}
-};
 
 
 /**************************************************************
@@ -49,7 +26,7 @@ private:
 	Path shortestDistancePath;
 	std::vector< Path > k_shortestDistancePath;
 	int shortestTimePath_index;
-	std::vector<Operation> shortestTimePath_operationList;
+	OperationList shortestTimePath_operationList;
 	float shortestTimePath_cost;
 	std::list<IndexVec> needToSearchWallIndex;
 	const bool useDiagonalPath;
@@ -58,12 +35,6 @@ private:
 	void removeEdge(const IndexVec& start, const IndexVec& end);
 	void removeNode(const IndexVec& node);
 	bool matchPath(const Path &path1, const Path &path2, int n);
-
-	//Pathを入れるとOperationのリストを返す
-	const std::list<Operation> convertOperationList(const Path &path);
-
-	//Operationのリストから合計コストを計算する
-	float evalOperationList(const std::list<Operation> &actionList);
 
 public:
 	ShortestPath(Maze &_maze, bool _useDiagonalPath = false)
@@ -99,7 +70,7 @@ public:
 	int calcShortestTimePath(const IndexVec &start, const IndexVec &goal, int k, bool onlyUseFoundWall);
 	int calcShortestTimePath(const IndexVec &start, const std::list<IndexVec> &goalList, int k, bool onlyUseFoundWall);
 	inline const Path &getShortestTimePath() const { return k_shortestDistancePath[shortestTimePath_index]; }
-	inline const std::vector<Operation> &getShortestTimePathOperation() const { return shortestTimePath_operationList; }
+	inline const OperationList &getShortestTimePathOperation() const { return shortestTimePath_operationList; }
 	inline float getShortestTimePathCost() const { return shortestTimePath_cost; }
 
 	//kShortestDistancePath上の未探索壁がある座標リストを計算する。

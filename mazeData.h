@@ -14,6 +14,6 @@ extern const char mazeData_maze3[16+1][16+1];
 extern const char mazeData_maze4[16+1][16+1];
 extern const char mazeData_maze5[16+1][16+1];
 extern const char mazeData_maze[16+1][16+1];
-extern const char mazeData_99test[5+1][5+1];
+extern const char mazeData_66test[5+1][5+1];
 
 #endif /* MAZEDATA_H_ */
