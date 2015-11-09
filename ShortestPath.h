@@ -29,7 +29,6 @@ private:
 	OperationList shortestTimePath_operationList;
 	float shortestTimePath_cost;
 	std::list<IndexVec> needToSearchWallIndex;
-	const bool useDiagonalPath;
 
 	//k shortest pathの関数内で使う
 	void removeEdge(const IndexVec& start, const IndexVec& end);
@@ -38,7 +37,7 @@ private:
 
 public:
 	ShortestPath(Maze &_maze, bool _useDiagonalPath = false)
-: maze(&_maze), shortestTimePath_index(-1), useDiagonalPath(_useDiagonalPath)
+: maze(&_maze), shortestTimePath_index(-1)
 {
 		clear();
 }
@@ -67,8 +66,8 @@ public:
 	//内部でk_shortestDistancePathを実行し、k個のpathの走行時間を計算する
 	//その内で一番コスト(走行時間)が小さいものをShortestTimePathとする
 	//最短経路のindex(k_shortestDistancePathの)をshortestTimePath_indexに格納する
-	int calcShortestTimePath(const IndexVec &start, const IndexVec &goal, int k, bool onlyUseFoundWall);
-	int calcShortestTimePath(const IndexVec &start, const std::list<IndexVec> &goalList, int k, bool onlyUseFoundWall);
+	int calcShortestTimePath(const IndexVec &start, const IndexVec &goal, int k, bool onlyUseFoundWall, bool useDiagonalPath);
+	int calcShortestTimePath(const IndexVec &start, const std::list<IndexVec> &goalList, int k, bool onlyUseFoundWall, bool useDiagonalPath);
 	inline const Path &getShortestTimePath() const { return k_shortestDistancePath[shortestTimePath_index]; }
 	inline const OperationList &getShortestTimePathOperation() const { return shortestTimePath_operationList; }
 	inline float getShortestTimePathCost() const { return shortestTimePath_cost; }

@@ -179,14 +179,14 @@ int ShortestPath::calcKShortestDistancePath(const IndexVec &start, const std::li
 	return k_shortestDistancePath.size();
 }
 
-int ShortestPath::calcShortestTimePath(const IndexVec &start, const IndexVec &goal, int k, bool onlyUseFoundWall)
+int ShortestPath::calcShortestTimePath(const IndexVec &start, const IndexVec &goal, int k, bool onlyUseFoundWall, bool useDiagonalPath)
 {
 	std::list<IndexVec> goalList;
 	goalList.push_back(goal);
-	return calcShortestTimePath(start, goalList, k, onlyUseFoundWall);
+	return calcShortestTimePath(start, goalList, k, onlyUseFoundWall, useDiagonalPath);
 }
 
-int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<IndexVec> &goalList, int k, bool onlyUseFoundWall)
+int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<IndexVec> &goalList, int k, bool onlyUseFoundWall, bool useDiagonalPath)
 {
 	if (calcKShortestDistancePath(start, goalList, k, onlyUseFoundWall) == 0) return false;
 	std::vector<uint32_t> costs;

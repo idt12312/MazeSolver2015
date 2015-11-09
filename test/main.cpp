@@ -75,7 +75,7 @@ void test_ShortestPathInTime(const char *filename)
 	//field.loadFromArray(mazeData_maze);
 
 	ShortestPath path(field,true);
-	path.calcShortestTimePath(IndexVec(0,0), MAZE_GOAL_LIST, 20, false);
+	path.calcShortestTimePath(IndexVec(0,0), MAZE_GOAL_LIST, 20, false, true);
 
 	auto &p = path.getShortestTimePath();
 	printf("length %lu\n", p.size());
