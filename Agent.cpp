@@ -72,7 +72,6 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 		state = Agent::SEARCHING_NOT_GOAL;
 	}
 
-
 	if (state == Agent::SEARCHING_NOT_GOAL) {
 		for (auto it = distIndexList.begin();it!=distIndexList.end();) {
 			if (*it == cur){
@@ -84,7 +83,21 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 		if (distIndexList.empty()) {
 			state = Agent::SEARCHING_REACHED_GOAL;
 		}
-		else dist = distIndexList.front();
+		else {
+			//distIndexListの中から現在座標に一番近い近いものをdistに入れる
+			int minDistance = INT32_MAX;
+			std::list<IndexVec>::iterator it_nearestDist;
+			maze->updateStepMap(cur);
+			for (auto it=distIndexList.begin();it!=distIndexList.end();it++) {
+				int stepDiff = maze->getStepMap(cur) - maze->getStepMap(*it);
+				if (stepDiff<0) stepDiff = -stepDiff;
+				if (stepDiff < minDistance) {
+					minDistance = stepDiff;
+					it_nearestDist = it;
+				}
+			}
+			dist = *it_nearestDist;
+		}
 	}
 
 
