@@ -89,8 +89,8 @@ public:
 	inline const Path &getShortestPath() const {return path.getShortestTimePath();}
 	inline const std::vector<Operation> &getRunSequence() const { return path.getShortestTimePathOperation(); }
 
-	//TODO:途中から再開できるようにしたい
-
+	//途中から再開する
+	void resumeAt(State resumeState, Maze &_maze);
 };
 
 
