@@ -142,7 +142,7 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 void Agent::caclRunSequence()
 {
 	if (state != Agent::FINISHED) return ;
-	path.calcShortestTimePath(IndexVec(0,0), MAZE_GOAL_LIST, SEARCH_DEPTH2, true);
+	path.calcShortestTimePath(IndexVec(0,0), MAZE_GOAL_LIST, SEARCH_DEPTH2, true, true);
 }
 
 

@@ -25,7 +25,10 @@
 
 //経路のコストを計算するときに使うロボットの走行性能
 //90度曲がるブロックを進むのにかかる時間[s]
-#define TURN90_TIME 	0.7
+#define TURN90_TIME 	0.3
+
+//45度曲がるブロックを進むのにかかる時間[s]
+#define TURN45_TIME 	0.2
 
 //加速度[m/s^2]
 #define ACCELERATION 	6.0

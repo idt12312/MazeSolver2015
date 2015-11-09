@@ -179,117 +179,44 @@ int ShortestPath::calcKShortestDistancePath(const IndexVec &start, const std::li
 	return k_shortestDistancePath.size();
 }
 
-const std::list<Operation> ShortestPath::convertOperationList(const Path &path)
-{
-	std::vector<Operation> opList;
-	std::list<Operation> result;
-
-	int8_t robotDir = 0;
-	for (size_t i=0;i<path.size()-1; i++) {
-		const IndexVec dxdy = path[i+1] - path[i];
-		int8_t dir = 0;
-		for (int j=0;j<4;j++) {
-			if (dxdy == IndexVec::vecDir[j]) {
-				dir = j;
-			}
-		}
-
-		const int8_t dirDiff = dir - robotDir;
-		if (dirDiff == 0) {
-			opList.push_back(Operation(Operation::FORWARD));
-		}
-		else if (dirDiff == 1 || dirDiff == -3) {
-			opList.push_back(Operation(Operation::TURN_RIGHT90));
-		}
-		else if (dirDiff == -1 || dirDiff == 3) {
-			opList.push_back(Operation(Operation::TURN_LEFT90));
-		}
-		//おかしい
-		else {
-			while(1);
-		}
-		robotDir = dir;
-	}
-
-	//FORWARDの圧縮
-	result.push_back(opList[0].op);
-	for (size_t i=1;i<opList.size();i++) {
-		if (opList[i].op == Operation::FORWARD && opList[i].op == result.back().op) {
-			result.back().n++;
-		}
-		else {
-			result.push_back(opList[i].op);
-		}
-	}
-
-	return std::move(result);
-
-}
-
-float ShortestPath::evalOperationList(const std::list<Operation> &actionList)
-{
-	float cost = 0.0;
-	for (auto &operation : actionList) {
-		if (operation.op == Operation::FORWARD) {
-			//「直線は速度が台形になるように加速する」と仮定してコストを計算
-			const float distance = operation.n * MAZE_1BLOCK_LENGTH;
-			const float accelDistance = (MAX_VELOCITY*MAX_VELOCITY - MIN_VELOCITY*MIN_VELOCITY) / (2*ACCELERATION);
-
-			if (distance > 2*accelDistance) {
-				cost += (distance - 2*accelDistance)/MAX_VELOCITY + 2*( (MAX_VELOCITY-MIN_VELOCITY)/ACCELERATION);
-			}
-			else {
-				const float rt = sqrt(MIN_VELOCITY*MIN_VELOCITY + 2*ACCELERATION*distance/2);
-				cost += 2*( (-MIN_VELOCITY + rt)/ACCELERATION );
-			}
-		}
-		else if (operation.op == Operation::TURN_LEFT90 || operation.op == Operation::TURN_RIGHT90) {
-			cost += TURN90_TIME;
-		}
-	}
-
-	return cost;
-}
-
-
-int ShortestPath::calcShortestTimePath(const IndexVec &start, const IndexVec &goal, int k, bool onlyUseFoundWall)
+int ShortestPath::calcShortestTimePath(const IndexVec &start, const IndexVec &goal, int k, bool onlyUseFoundWall, bool useDiagonalPath)
 {
 	std::list<IndexVec> goalList;
 	goalList.push_back(goal);
-	return calcShortestTimePath(start, goalList, k, onlyUseFoundWall);
+	return calcShortestTimePath(start, goalList, k, onlyUseFoundWall, useDiagonalPath);
 }
 
-int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<IndexVec> &goalList, int k, bool onlyUseFoundWall)
+int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<IndexVec> &goalList, int k, bool onlyUseFoundWall, bool useDiagonalPath)
 {
 	if (calcKShortestDistancePath(start, goalList, k, onlyUseFoundWall) == 0) return false;
 	std::vector<uint32_t> costs;
 
 	float minCost = FLT_MAX;
+	OperationList minCost_opList;
 	for (int i=k_shortestDistancePath.size()-1;i>=0;i--) {
-		const int length = k_shortestDistancePath[i].size();
-		const float cost = evalOperationList(convertOperationList(k_shortestDistancePath[i]));
-		//printf("dist %d\tcost %f\n", length, cost);
+		minCost_opList.loadFromPath(k_shortestDistancePath[i], useDiagonalPath);
+		const float cost = minCost_opList.eval();
 		if (cost < minCost) {
 			minCost = cost;
+			shortestTimePath_operationList = minCost_opList;
 			shortestTimePath_index = i;
 		}
 	}
+	shortestTimePath_cost = minCost;
 
-	//Operationのリストをつくる
-	auto opList = convertOperationList(k_shortestDistancePath[shortestTimePath_index]);
-	shortestTimePath_operationList.clear();
-	shortestTimePath_operationList.assign(opList.begin(),opList.end());
 
 	//デバッグ用
-	/*
 	for (auto operation : shortestTimePath_operationList) {
 		if (operation.op == Operation::FORWARD) printf("F");
 		if (operation.op == Operation::TURN_LEFT90) printf("L");
 		if (operation.op == Operation::TURN_RIGHT90) printf("R");
+		if (operation.op == Operation::TURN_RIGHT45) printf("r");
+		if (operation.op == Operation::TURN_LEFT45) printf("l");
+		if (operation.op == Operation::FORWARD_DIAG) printf("D");
 		printf("%d ",operation.n);
 	}
 	printf("\n");
-	*/
+
 
 	return true;
 }

@@ -207,7 +207,7 @@ extern const char mazeData_maze[16+1][16+1] = {
 		{"eec55456fc554556"},
 };
 
-extern const char mazeData_99test[5+1][5+1] = {
+extern const char mazeData_66test[5+1][5+1] = {
 		{"91513"},
 		{"aad6a"},
 		{"aad3a"},

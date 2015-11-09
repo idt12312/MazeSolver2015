@@ -9,6 +9,7 @@
 #include "Maze.h"
 #include "ShortestPath.h"
 
+#include "Operation.h"
 
 /**************************************************************
  * Agent
@@ -87,7 +88,7 @@ public:
 	//Agentの状態がFINISHEDになっている時に実行する
 	void caclRunSequence();
 	inline const Path &getShortestPath() const {return path.getShortestTimePath();}
-	inline const std::vector<Operation> &getRunSequence() const { return path.getShortestTimePathOperation(); }
+	inline const OperationList &getRunSequence() const { return path.getShortestTimePathOperation(); }
 
 	//途中から再開する
 	//再開したいAgentと迷路の状態を渡す
