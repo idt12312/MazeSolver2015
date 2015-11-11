@@ -66,6 +66,7 @@ int main()
 		if (agent.getState() == Agent::FINISHED) break;
         
         //ゴールにたどり着いた瞬間に一度だけmazeのバックアップをとる
+        //Mazeクラスはoperator=が定義してあるからa = bでコピーできる
         if (prev_State == Agent::SEARCHING_NOT_GOAL && agent.getState() == SEARCHING_REACHED_GOAL) {
 			maze_backup = maze;
         }
@@ -98,7 +99,7 @@ int main()
      * 計測走行
      *********************************/
     //コマンドリストみたいなやつを取り出す
-    Operation runSequence = agent.getRunSequence();
+    const OperationList &runSequence = agent.getRunSequence();
     
     //Operationを先頭から順番に実行していく
     for (size_t i=0;i<runSequence.size();i++) {
@@ -311,6 +312,10 @@ _mazeには再開したいMazeの状態を入れる。
 //インスタンス化
 Maze maze; //壁情報(Direction)は全て0で初期化
 Maze maze2(maze); //複製
+
+//代入コピー
+Maze maze1, maze2;
+maze1 = maze2;
 
 //ロード
 maze.loadFromFile("maze_data.dat"); //ファイルから

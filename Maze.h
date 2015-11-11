@@ -170,6 +170,16 @@ public:
 		}
 	}
 
+	const Maze& operator=(const Maze &obj)
+	{
+		for (int i=0;i<MAZE_SIZE;i++) {
+			for (int j=0;j<MAZE_SIZE;j++) {
+				wall[i][j] = obj.wall[i][j];
+			}
+		}
+		return *this;
+	}
+
 	//wallもstepMapも全て0になる
 	void clear();
 
