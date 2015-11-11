@@ -26,7 +26,7 @@ void test_Maze(const char *filename)
 {
 	Maze field;
 	field.loadFromFile(filename);
-	//field.loadFromArray(mazeData_99test);
+	//field.loadFromArray(mazeData_66test);
 	field.printWall();
 }
 
@@ -34,7 +34,7 @@ void test_ShortestPath(const char *filename)
 {
 	Maze field;
 	field.loadFromFile(filename);
-	//field.loadFromArray(mazeData_99test);
+	//field.loadFromArray(mazeData_66test);
 
 	ShortestPath path(field);
 	path.calcShortestDistancePath(IndexVec(0,0), MAZE_GOAL_LIST, false);
@@ -50,7 +50,7 @@ void test_KShortestPath(const char *filename)
 {
 	Maze field;
 	field.loadFromFile(filename);
-	//field.loadFromArray(mazeData_99test);
+	//field.loadFromArray(mazeData_66test);
 
 	ShortestPath path(field);
 	path.calcKShortestDistancePath(IndexVec(0,0), MAZE_GOAL_LIST, 5, false);
@@ -74,11 +74,12 @@ void test_ShortestPathInTime(const char *filename)
 	field.loadFromFile(filename);
 	//field.loadFromArray(mazeData_maze);
 
-	ShortestPath path(field);
-	path.calcShortestTimePath(IndexVec(0,0), MAZE_GOAL_LIST, 20, false);
+	ShortestPath path(field,true);
+	path.calcShortestTimePath(IndexVec(0,0), MAZE_GOAL_LIST, 20, false, true);
 
 	auto &p = path.getShortestTimePath();
 	printf("length %lu\n", p.size());
+	printf("cost %f\n", path.getShortestTimePathCost());
 	bool route[MAZE_SIZE][MAZE_SIZE] = {false};
 	for (auto &index : p) {
 		route[index.y][index.x] = true;
@@ -91,7 +92,7 @@ void test_Agent(const char *filename)
 	Maze field;
 	Maze mazeInRobot;
 	field.loadFromFile(filename);
-	//field.loadFromArray(mazeData_99test);
+	//field.loadFromArray(mazeData_66test);
 
 	Agent agent(mazeInRobot);
 
@@ -111,7 +112,7 @@ void test_Agent(const char *filename)
 		usleep(1000000/10);
 	}
 
-	agent.caclRunSequence();
+	agent.caclRunSequence(true);
 	bool route[MAZE_SIZE][MAZE_SIZE] = {false};
 	for (auto &index : agent.getShortestPath()) {
 		route[index.y][index.x] = true;
@@ -130,10 +131,10 @@ int main(int argc, char **argv)
 
 	//test_Maze(argv[1]);
 	//test_Size();
-	test_Agent(argv[1]);
+	//test_Agent(argv[1]);
 	//test_ShortestPath(argv[1]);
 	//test_KShortestPath(argv[1]);
-	//test_ShortestPathInTime(argv[1]);
+	test_ShortestPathInTime(argv[1]);
 
 	printf("finish\n");
 

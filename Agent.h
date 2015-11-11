@@ -9,6 +9,7 @@
 #include "Maze.h"
 #include "ShortestPath.h"
 
+#include "Operation.h"
 
 /**************************************************************
  * Agent
@@ -45,7 +46,6 @@ private:
 
 	//最短経路の計算をするやつ
 	ShortestPath path;
-
 
 	//足立法で次に進むべき方向を算出してくれる
 	Direction calcNextDirection(const IndexVec &cur, const IndexVec &dist);
@@ -85,12 +85,13 @@ public:
 
 	//最終的に走る経路を計算する
 	//Agentの状態がFINISHEDになっている時に実行する
-	void caclRunSequence();
+	void caclRunSequence(bool useDiagonalPath);
 	inline const Path &getShortestPath() const {return path.getShortestTimePath();}
-	inline const std::vector<Operation> &getRunSequence() const { return path.getShortestTimePathOperation(); }
+	inline const OperationList &getRunSequence() const { return path.getShortestTimePathOperation(); }
 
-	//TODO:途中から再開できるようにしたい
-
+	//途中から再開する
+	//再開したいAgentと迷路の状態を渡す
+	void resumeAt(State resumeState, Maze &_maze);
 };
 
 

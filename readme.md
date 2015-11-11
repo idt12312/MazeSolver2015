@@ -33,9 +33,13 @@
 
 //探索した迷路の壁情報がはいる
 Maze maze;
+//クラッシュした時のためのバックアップ
+Maze maze_backup;
 
 //探索の指示を出す
 Agent agent(maze);
+//前回のAgentの状態を保存しとく
+Agent::State prevState = IDLE;
 
 int main()
 {
@@ -48,6 +52,7 @@ int main()
         //ここで待っている時に割り込みでモーターを制御したりセンサの値を処理したりすることになる
     	while(!wallDataReady());
         
+        
         //センサから取得した壁情報を入れる
 		Direction wallData = getWallData();
 		//ロボットの座標を取得
@@ -59,6 +64,12 @@ int main()
         //Agentの状態を確認
         //FINISHEDになったら計測走行にうつる
 		if (agent.getState() == Agent::FINISHED) break;
+        
+        //ゴールにたどり着いた瞬間に一度だけmazeのバックアップをとる
+        if (prev_State == Agent::SEARCHING_NOT_GOAL && agent.getState() == SEARCHING_REACHED_GOAL) {
+			maze_backup = maze;
+        }
+        prev_State = agent.getState();
 
 		//一度はゴールにたどり着き、少なくともゴールできる状態で追加の探索をしているが、
         //もう時間が無いから探索をうちやめてスタート地点に戻る
@@ -79,13 +90,15 @@ int main()
     robotPositionInit();
     
     //最短経路の計算 割と時間がかかる(数秒)
-    agent.calcRunSequence();
+    //引数は斜め走行をするかしないか
+    //trueだと斜め走行をする
+    agent.calcRunSequence(true);
     
      /**********************************
      * 計測走行
      *********************************/
     //コマンドリストみたいなやつを取り出す
-    std::vector<Operation> runSequence = agent.getRunSequence();
+    Operation runSequence = agent.getRunSequence();
     
     //Operationを先頭から順番に実行していく
     for (size_t i=0;i<runSequence.size();i++) {
@@ -99,6 +112,14 @@ int main()
     //おわり
     
     return 0;
+}
+
+//マシンがクラッシュして、迷路情報のバックアップから復帰する
+//ここではFINISHEDに復帰をしている(これ以上の探索を諦めて、今わかっている情報から最速走行を行う)
+//マシンが(0,0)にいる状態でSEARCHING_REACHED_GOALやSEARCHING_NOT_GOALに戻してやると、うまく探索を再開できるようになっている
+//その場合はどの時のMazeに復旧するかがポイント
+void recoveryFromCrash() {
+	agent.resumeAt(FINISHED, maze_backup);
 }
 ```
 
@@ -226,13 +247,12 @@ OperationType opとuint8_t nをメンバに持る構造体で、「opという�
 |OperationTypeの値|意味|
 |---|---|
 |FORWARD|直進|
+|FORWARD_DIAG|斜めに直進(普通の直進とは進む距離が違う)|
 |TURN_RIGHT90|右に90度旋回|
 |TURN_RIGHT45|右に45度旋回|
 |TURN_LEFT90|左に90度旋回|
 |TURN_LEFT45|左に45度旋回|
 |STOP|停止|
-45度旋回は未実装
-
 ## ShortestPath (ShortestPath.h)
 * 最短経路とかを算出する
 * 触らない
@@ -242,6 +262,7 @@ OperationType opとuint8_t nをメンバに持る構造体で、「opという�
 * 基本的にここに壁情報をいれて、ここから次動くべき方向を取得する
 * 探索の指示を出し、終わったら最終的に走る経路を提示してくれる
 * 時間がかかり過ぎている場合などに探索を打ち切ってスタートに戻ることもできる
+* 探索走行中にマシンがクラッシュした時などのために、途中から再開することもできる
 
 ### 内部状態
 getState()で取得できる
@@ -256,12 +277,18 @@ getState()で取得できる
 
 状態がIDLEとFINISHED以外の時にはgetNextDirection()で次に進むべき方向が返ってくる
 
+### クラッシュ時に途中から再開する
+resumeAtメソッドを使う。
+引数のresumeStateには再開したいAgentの状態を、
+_mazeには再開したいMazeの状態を入れる。
+例は一番上の使用例を参照
 
 ### 最終的に走る経路
 * 状態がFINISHEDとときにcalcRunSequence()を実行すると最終的に走る経路が計算される
+* calcRunSequenceの引数をtrueにすると斜め走行あり、falseにすると斜め走行なしで計算をする
 * calcRunSequence()は数秒のオーダーで計算に時間がかかる
 * 計算できたらgetRunSequence()で最終的に走る経路が取得できる
-* 具体的にはconst std::vector<Operation> &が返ってくる(読み取り専用)
+* 具体的にはconst OperationList &が返ってくる(読み取り専用)
 * 先頭から順に実行をしていけばゴールにつく
 
 
