@@ -1,6 +1,8 @@
 #include "Operation.h"
 #include <math.h>
 
+
+
 float OperationList::eval() const
 {
 	float cost = 0.0;
@@ -30,6 +32,7 @@ float OperationList::eval() const
 
 	return cost;
 }
+
 
 void OperationList::loadFromPath(const Path& path, bool useDiagonalPath)
 {
@@ -65,13 +68,17 @@ void OperationList::loadFromPath(const Path& path, bool useDiagonalPath)
 	opList = tmp_opList;
 	tmp_opList.clear();
 
+	//ななめ走行ありのありの場合の計算
 	if (useDiagonalPath) {
 		Operation currentDiagOp;
 		for (size_t i=0;i<opList.size();i++) {
 			if (opList[i].op == Operation::TURN_RIGHT90 || opList[i].op == Operation::TURN_LEFT90) {
 				Operation::OperationType prevDiagOp = opList[i].op;
-				size_t j = i;
 
+				//jは斜め区間の終わりを指す
+				size_t j = i;
+				//この後ろの部分でjを斜め区間のおわりまで進めていく
+				//TODO:もっとエレガントにしたい
 				while(1) {
 					j++;
 					if (prevDiagOp == Operation::TURN_RIGHT90) {
@@ -94,6 +101,7 @@ void OperationList::loadFromPath(const Path& path, bool useDiagonalPath)
 
 				if (j-i > 1) {
 					//RLRL
+					//斜め区間の入る方向と出る方向が同じ時
 					if ((j-i)%2 == 0) {
 						if (prevDiagOp == Operation::TURN_RIGHT90) tmp_opList.push_back(Operation(Operation::TURN_LEFT45));
 						else tmp_opList.push_back(Operation(Operation::TURN_RIGHT45));
@@ -104,6 +112,7 @@ void OperationList::loadFromPath(const Path& path, bool useDiagonalPath)
 						else tmp_opList.push_back(Operation(Operation::TURN_LEFT45));
 					}
 					//RLR
+					//斜め区間の入る方向と出る方向が違う時
 					else {
 						if (prevDiagOp == Operation::TURN_RIGHT90) tmp_opList.push_back(Operation(Operation::TURN_RIGHT45));
 						else tmp_opList.push_back(Operation(Operation::TURN_LEFT45));

@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "Maze.h"
-//#include "ShortestPath.h"
 #include "MazeSolver_conf.h"
 
 
@@ -32,20 +31,35 @@ struct Operation {
 };
 
 
+/**************************************************************
+ * Operation List
+ *	スタートからゴールまでの一連のOperationの保持する
+ *	コンストラクタのPathを入れると勝手に変換する
+ **************************************************************/
 class OperationList {
 private:
 	std::vector<Operation> opList;
 
 public:
 	OperationList() { }
+	//Pathをいれると勝手に変換して保持する
 	OperationList(const Path &path, bool useDiagonalPath) { loadFromPath(path, useDiagonalPath); }
 
+	//std::vectorとおんなじようなインターフェース
 	inline std::vector<Operation>::const_iterator begin() const {return opList.begin(); }
 	inline std::vector<Operation>::const_iterator end() const { return opList.end(); }
+	inline size_t size() const { return opList.size(); }
 	inline void push_back(const Operation& op) { opList.push_back(op); }
 	inline void pop_back() { opList.pop_back(); }
 	const Operation &operator[](size_t i) const { return opList[i]; }
+
+	//opListの全動作の合計コスト(時間)を計算して返す
+	//マシンの走行をシミュレーションしてかかる時間を計算する
 	float eval() const;
+
+	//Path読み込む
+	//Operationに変換してメンバのOpListに保存する
+	//useDiagonalPath=trueにすると斜め走行ありで変換する
 	void loadFromPath(const Path& path, bool useDiagonalPath);
 };
 

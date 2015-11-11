@@ -47,7 +47,6 @@ private:
 	//最短経路の計算をするやつ
 	ShortestPath path;
 
-
 	//足立法で次に進むべき方向を算出してくれる
 	Direction calcNextDirection(const IndexVec &cur, const IndexVec &dist);
 
