@@ -152,10 +152,10 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 	nextDir = calcNextDirection(cur, dist);
 }
 
-void Agent::caclRunSequence()
+void Agent::caclRunSequence(bool useDiagonalPath)
 {
 	if (state != Agent::FINISHED) return ;
-	path.calcShortestTimePath(IndexVec(0,0), MAZE_GOAL_LIST, SEARCH_DEPTH2, true, true);
+	path.calcShortestTimePath(IndexVec(0,0), MAZE_GOAL_LIST, SEARCH_DEPTH2, true, useDiagonalPath);
 }
 
 
