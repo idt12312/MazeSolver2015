@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <algorithm>
 
 #include "MazeSolver_conf.h"

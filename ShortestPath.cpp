@@ -1,8 +1,7 @@
-#include <stdio.h>
-#include <float.h>
-#include <math.h>
+#include <cstdio>
+#include <cfloat>
+#include <cmath>
 #include <utility>
-
 #include <algorithm>
 
 #include "MazeSolver_conf.h"
@@ -102,6 +101,8 @@ int ShortestPath::calcKShortestDistancePath(const IndexVec &start, const std::li
 
 	//mazeを一旦退避
 	//書き換えるようにあたらしいものをつくって差し替える
+	//TODO:差し替えるてもちゃんとstepmapが更新されるかチェック
+	//TODO:差し替えではなく、変更部分だけを後で修復したほうがはやいと思う
 	Maze *tmpMaze = maze;
 	Maze newMaze(*tmpMaze);
 	maze = &newMaze;

@@ -2,6 +2,7 @@
 #define OPERATION_H_
 
 #include <vector>
+#include <cstddef>
 #include "Maze.h"
 #include "MazeSolver_conf.h"
 

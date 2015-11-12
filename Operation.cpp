@@ -1,7 +1,6 @@
+#include <cmath>
+
 #include "Operation.h"
-#include <math.h>
-
-
 
 float OperationList::eval() const
 {
@@ -18,7 +17,7 @@ float OperationList::eval() const
 				cost += (distance - 2*accelDistance)/MAX_VELOCITY + 2*( (MAX_VELOCITY-MIN_VELOCITY)/ACCELERATION);
 			}
 			else {
-				const float rt = sqrt(MIN_VELOCITY*MIN_VELOCITY + 2*ACCELERATION*distance/2);
+				const float rt = std::sqrt(MIN_VELOCITY*MIN_VELOCITY + 2*ACCELERATION*distance/2);
 				cost += 2*( (-MIN_VELOCITY + rt)/ACCELERATION );
 			}
 		}
