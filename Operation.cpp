@@ -1,7 +1,6 @@
+#include <cmath>
+#include <cstdio>
 #include "Operation.h"
-#include <math.h>
-
-
 
 float OperationList::eval() const
 {
@@ -18,7 +17,7 @@ float OperationList::eval() const
 				cost += (distance - 2*accelDistance)/MAX_VELOCITY + 2*( (MAX_VELOCITY-MIN_VELOCITY)/ACCELERATION);
 			}
 			else {
-				const float rt = sqrt(MIN_VELOCITY*MIN_VELOCITY + 2*ACCELERATION*distance/2);
+				const float rt = std::sqrt(MIN_VELOCITY*MIN_VELOCITY + 2*ACCELERATION*distance/2);
 				cost += 2*( (-MIN_VELOCITY + rt)/ACCELERATION );
 			}
 		}
@@ -151,4 +150,19 @@ void OperationList::loadFromPath(const Path& path, bool useDiagonalPath)
 		}
 	}
 
+}
+
+
+void OperationList::print()
+{
+	for (auto operation : opList) {
+		if (operation.op == Operation::FORWARD) printf("F");
+		if (operation.op == Operation::TURN_LEFT90) printf("L");
+		if (operation.op == Operation::TURN_RIGHT90) printf("R");
+		if (operation.op == Operation::TURN_RIGHT45) printf("r");
+		if (operation.op == Operation::TURN_LEFT45) printf("l");
+		if (operation.op == Operation::FORWARD_DIAG) printf("D");
+		printf("%d ",operation.n);
+	}
+	printf("\n");
 }

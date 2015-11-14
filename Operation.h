@@ -2,6 +2,7 @@
 #define OPERATION_H_
 
 #include <vector>
+#include <cstddef>
 #include "Maze.h"
 #include "MazeSolver_conf.h"
 
@@ -44,6 +45,13 @@ public:
 	OperationList() { }
 	//Pathをいれると勝手に変換して保持する
 	OperationList(const Path &path, bool useDiagonalPath) { loadFromPath(path, useDiagonalPath); }
+	OperationList(const OperationList &obj) { opList = obj.opList; }
+
+	const OperationList &operator=(const OperationList &rhs)
+	{
+		opList = rhs.opList;
+		return (*this);
+	}
 
 	//std::vectorとおんなじようなインターフェース
 	inline std::vector<Operation>::const_iterator begin() const {return opList.begin(); }
@@ -61,6 +69,8 @@ public:
 	//Operationに変換してメンバのOpListに保存する
 	//useDiagonalPath=trueにすると斜め走行ありで変換する
 	void loadFromPath(const Path& path, bool useDiagonalPath);
+
+	void print();
 };
 
 

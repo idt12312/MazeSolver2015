@@ -1,14 +1,11 @@
 #ifndef AGENT_H_
 #define AGENT_H_
 
-#include <stdint.h>
-
 #include <list>
 #include <vector>
 
 #include "Maze.h"
 #include "ShortestPath.h"
-
 #include "Operation.h"
 
 /**************************************************************

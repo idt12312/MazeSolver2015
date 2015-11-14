@@ -1,6 +1,6 @@
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
 #include <queue>
 
 #include "Maze.h"
@@ -42,24 +42,24 @@ bool Maze::loadFromFile(const char *_filename)
 	dirty = true;
 
 	FILE *inputFile;
-	inputFile = fopen(_filename, "r");
+	inputFile = std::fopen(_filename, "r");
 	if (inputFile == NULL) {
-		printf("ERROR : Failed open wall data file\n");
+		std::printf("ERROR : Failed open wall data file\n");
 		return false;
 	}
 
 	for (int i=0;i<3;i++) {
 		int dummy;
-		if (fscanf(inputFile, "%d", &dummy) == EOF) {
-			printf("ERROR : Failed read wall data\n");
-			fclose(inputFile);
+		if (std::fscanf(inputFile, "%d", &dummy) == EOF) {
+			std::printf("ERROR : Failed read wall data\n");
+			std::fclose(inputFile);
 			return false;
 		}
 	}
 
 	size_t cnt = 0;
 	char ch;
-	while (fscanf(inputFile, "%c", &ch) != EOF) {
+	while (std::fscanf(inputFile, "%c", &ch) != EOF) {
 		if ( ('0' <= ch && ch <= '9') || ('a' <= ch && ch <= 'f')) {
 			uint8_t wall_bin;
 			if ('0' <= ch && ch <= '9') wall_bin = ch - '0';
@@ -71,7 +71,7 @@ bool Maze::loadFromFile(const char *_filename)
 			cnt++;
 		}
 	}
-	fclose(inputFile);
+	std::fclose(inputFile);
 
 	return true;
 }
@@ -102,25 +102,25 @@ void Maze::printWall(const uint8_t value[MAZE_SIZE][MAZE_SIZE]) const
 
 	for (int y=MAZE_SIZE-1;y>=0;y--) {
 		for (int x=0;x<MAZE_SIZE;x++) {
-			printf("+");
-			if(wall[y][x].bits.North) printf("----");
-			else printf("    ");
+			std::printf("+");
+			if(wall[y][x].bits.North) std::printf("----");
+			else std::printf("    ");
 		}
-		printf("+\n");
+		std::printf("+\n");
 
 		for (int x=0;x<MAZE_SIZE;x++) {
-			if (wall[y][x].bits.West) printf("|");
-			else printf(" ");
-			printf(" ");
-			if (printValueOn) printf("%3u", value[y][x]);
-			else printf("   ");
+			if (wall[y][x].bits.West) std::printf("|");
+			else std::printf(" ");
+			std::printf(" ");
+			if (printValueOn) std::printf("%3u", value[y][x]);
+			else std::printf("   ");
 		}
-		printf("|\n");
+		std::printf("|\n");
 	}
 	for (int i=0;i<MAZE_SIZE;i++) {
-		printf("-----");
+		std::printf("-----");
 	}
-	printf("+\n");
+	std::printf("+\n");
 }
 
 
@@ -132,28 +132,28 @@ void Maze::printWall(const bool value[MAZE_SIZE][MAZE_SIZE]) const
 
 	for (int y=MAZE_SIZE-1;y>=0;y--) {
 		for (int x=0;x<MAZE_SIZE;x++) {
-			printf("+");
-			if(wall[y][x].bits.North) printf("----");
-			else printf("    ");
+			std::printf("+");
+			if(wall[y][x].bits.North) std::printf("----");
+			else std::printf("    ");
 		}
-		printf("+\n");
+		std::printf("+\n");
 
 		for (int x=0;x<MAZE_SIZE;x++) {
-			if (wall[y][x].bits.West) printf("|");
-			else printf(" ");
-			printf("  ");
+			if (wall[y][x].bits.West) std::printf("|");
+			else std::printf(" ");
+			std::printf("  ");
 			if (printValueOn){
-				if (value[y][x]) printf("* ");
-				else printf("  ");
+				if (value[y][x]) std::printf("* ");
+				else std::printf("  ");
 			}
-			else printf("   ");
+			else std::printf("   ");
 		}
-		printf("|\n");
+		std::printf("|\n");
 	}
 	for (int i=0;i<MAZE_SIZE;i++) {
-		printf("-----");
+		std::printf("-----");
 	}
-	printf("+\n");
+	std::printf("+\n");
 }
 
 void Maze::printStepMap() const
@@ -188,7 +188,7 @@ void Maze::updateStepMap(const IndexVec &dist, bool onlyUseFoundWall)
 	lastStepMapDist = dist;
 	lastOnlyUseFoundWall = onlyUseFoundWall;
 
-	memset(&stepMap, 0xff, sizeof(uint8_t)*MAZE_SIZE*MAZE_SIZE);
+	std::memset(&stepMap, 0xff, sizeof(uint8_t)*MAZE_SIZE*MAZE_SIZE);
 	stepMap[dist.y][dist.x] = 0;
 
 	std::queue<IndexVec> q;

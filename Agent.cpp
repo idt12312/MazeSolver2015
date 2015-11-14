@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <algorithm>
 
 #include "MazeSolver_conf.h"
@@ -162,7 +161,7 @@ void Agent::caclRunSequence(bool useDiagonalPath)
 void Agent::resumeAt(State resumeState, Maze &_maze)
 {
 	reset();
-	maze = &_maze;
+	*maze = _maze;
 
 	if (resumeState == State::IDLE) {
 		state = State::IDLE;

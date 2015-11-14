@@ -1,8 +1,7 @@
-#include <stdio.h>
-#include <float.h>
-#include <math.h>
+#include <cstdio>
+#include <cfloat>
+#include <cmath>
 #include <utility>
-
 #include <algorithm>
 
 #include "MazeSolver_conf.h"
@@ -102,6 +101,8 @@ int ShortestPath::calcKShortestDistancePath(const IndexVec &start, const std::li
 
 	//mazeを一旦退避
 	//書き換えるようにあたらしいものをつくって差し替える
+	//TODO:差し替えるてもちゃんとstepmapが更新されるかチェック
+	//TODO:差し替えではなく、変更部分だけを後で修復したほうがはやいと思う
 	Maze *tmpMaze = maze;
 	Maze newMaze(*tmpMaze);
 	maze = &newMaze;
@@ -203,20 +204,6 @@ int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<In
 		}
 	}
 	shortestTimePath_cost = minCost;
-
-/*
-	//デバッグ用
-	for (auto operation : shortestTimePath_operationList) {
-		if (operation.op == Operation::FORWARD) printf("F");
-		if (operation.op == Operation::TURN_LEFT90) printf("L");
-		if (operation.op == Operation::TURN_RIGHT90) printf("R");
-		if (operation.op == Operation::TURN_RIGHT45) printf("r");
-		if (operation.op == Operation::TURN_LEFT45) printf("l");
-		if (operation.op == Operation::FORWARD_DIAG) printf("D");
-		printf("%d ",operation.n);
-	}
-	printf("\n");
-*/
 
 	return true;
 }

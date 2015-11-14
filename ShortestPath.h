@@ -1,10 +1,9 @@
 #ifndef SHORTESTPATH_H_
 #define SHORTESTPATH_H_
 
-
-#include <stdint.h>
 #include <list>
 #include <vector>
+
 #include "Maze.h"
 #include "Operation.h"
 

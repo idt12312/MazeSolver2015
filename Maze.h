@@ -1,12 +1,9 @@
 #ifndef MAZE_H_
 #define MAZE_H_
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <sys/types.h>
-
+#include <cstdint>
+#include <cstddef>
 #include "MazeSolver_conf.h"
-
 
 
 /**************************************************************
@@ -116,7 +113,7 @@ struct __attribute__ ((__packed__)) IndexVec {
 	}
 
 	//L1ノルム
-	inline uint norm() const
+	inline uint8_t norm() const
 	{
 		const int8_t x_abs = x>0?x:-x;
 		const int8_t y_abs = y>0?y:-y;
@@ -166,6 +163,7 @@ public:
 		for (int i=0;i<MAZE_SIZE;i++) {
 			for (int j=0;j<MAZE_SIZE;j++) {
 				wall[i][j] = obj.wall[i][j];
+				stepMap[i][j] = obj.stepMap[i][j];
 			}
 		}
 	}
@@ -175,6 +173,7 @@ public:
 		for (int i=0;i<MAZE_SIZE;i++) {
 			for (int j=0;j<MAZE_SIZE;j++) {
 				wall[i][j] = obj.wall[i][j];
+				stepMap[i][j] = obj.stepMap[i][j];
 			}
 		}
 		return *this;
@@ -194,7 +193,7 @@ public:
 
 	//コンソール上にそれっぽく整形して迷路を表示する
 	//引数に数字の配列を渡すと各区画にその数字が表示される
-	void printWall(const uint8_t value[MAZE_SIZE][MAZE_SIZE] = NULL) const;
+	void printWall(const uint8_t value[MAZE_SIZE][MAZE_SIZE] = nullptr) const;
 	//引数にboolの配列を渡すと、trueの区画に*が表示される
 	void printWall(const bool value[MAZE_SIZE][MAZE_SIZE]) const;
 	//歩数マップを表示
