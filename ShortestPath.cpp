@@ -205,20 +205,6 @@ int ShortestPath::calcShortestTimePath(const IndexVec &start, const std::list<In
 	}
 	shortestTimePath_cost = minCost;
 
-/*
-	//デバッグ用
-	for (auto operation : shortestTimePath_operationList) {
-		if (operation.op == Operation::FORWARD) printf("F");
-		if (operation.op == Operation::TURN_LEFT90) printf("L");
-		if (operation.op == Operation::TURN_RIGHT90) printf("R");
-		if (operation.op == Operation::TURN_RIGHT45) printf("r");
-		if (operation.op == Operation::TURN_LEFT45) printf("l");
-		if (operation.op == Operation::FORWARD_DIAG) printf("D");
-		printf("%d ",operation.n);
-	}
-	printf("\n");
-*/
-
 	return true;
 }
 
