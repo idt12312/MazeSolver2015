@@ -37,13 +37,15 @@ void test_ShortestPath(const char *filename)
 	//field.loadFromArray(mazeData_66test);
 
 	ShortestPath path(field);
+	for (int i=0;i<100000;i++) {
 	path.calcShortestDistancePath(IndexVec(0,0), MAZE_GOAL_LIST, false);
+	}
 	bool route[MAZE_SIZE][MAZE_SIZE] = {false};
 	for (auto index : path.getShortestDistancePath())
 	{
 		route[index.y][index.x] = true;
 	}
-	field.printWall(route);
+	//field.printWall(route);
 }
 
 void test_KShortestPath(const char *filename)
@@ -131,8 +133,8 @@ int main(int argc, char **argv)
 
 	//test_Maze(argv[1]);
 	//test_Size();
-	test_Agent(argv[1]);
-	//test_ShortestPath(argv[1]);
+	//test_Agent(argv[1]);
+	test_ShortestPath(argv[1]);
 	//test_KShortestPath(argv[1]);
 	//test_ShortestPathInTime(argv[1]);
 

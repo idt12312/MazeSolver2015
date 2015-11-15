@@ -1,5 +1,3 @@
-#include <cstring>
-#include <cstdlib>
 #include <cstdio>
 #include <queue>
 
@@ -163,8 +161,10 @@ void Maze::printStepMap() const
 
 void Maze::updateWall(const IndexVec &cur, const Direction& newState, bool forceSetDone)
 {
-	dirty = true;
+	//二重書き込みを防ぐ
+	if (!forceSetDone && wall[cur.y][cur.x].isDoneAll()) return;
 
+	dirty = true;
 	if (forceSetDone) wall[cur.y][cur.x] |= newState | (uint8_t)0xf0;
 	else wall[cur.y][cur.x] |= newState;
 
@@ -187,25 +187,36 @@ void Maze::updateStepMap(const IndexVec &dist, bool onlyUseFoundWall)
 	if (!dirty && dist == lastStepMapDist && onlyUseFoundWall == lastOnlyUseFoundWall) return;
 	lastStepMapDist = dist;
 	lastOnlyUseFoundWall = onlyUseFoundWall;
+	dirty = false;
 
-	std::memset(&stepMap, 0xff, sizeof(uint8_t)*MAZE_SIZE*MAZE_SIZE);
+	for(size_t i=0;i<MAZE_SIZE;i++) {
+		for(size_t j=0;j<MAZE_SIZE;j++) {
+			stepMap[i][j] = 0xff;
+		}
+	}
 	stepMap[dist.y][dist.x] = 0;
 
 	std::queue<IndexVec> q;
 	q.push(dist);
 
 	while (!q.empty()) {
-		IndexVec cur = q.front();
+		const IndexVec cur = q.front();
 		q.pop();
 
 		Direction cur_wall = wall[cur.y][cur.x];
 		for (int i=0;i<4;i++) {
 			const IndexVec scanIndex = cur + IndexVec::vecDir[i];
-			if (!cur_wall[i] && stepMap[scanIndex.y][scanIndex.x] > stepMap[cur.y][cur.x] +1) {
+			const uint8_t curStep = stepMap[cur.y][cur.x];
+			if (!cur_wall[i] && stepMap[scanIndex.y][scanIndex.x] > curStep +1) {
 				//未探索壁をどうするか
 				if (onlyUseFoundWall && !cur_wall[i+4]) continue;
-				stepMap[scanIndex.y][scanIndex.x] = stepMap[cur.y][cur.x] +1;
-				q.push(scanIndex);
+
+				stepMap[scanIndex.y][scanIndex.x] = curStep +1;
+
+				//袋小路でない場合はqueueに入れる
+				if (wall[scanIndex.y][scanIndex.x].nWall() != 3) {
+					q.push(scanIndex);
+				}
 			}
 		}
 	}
