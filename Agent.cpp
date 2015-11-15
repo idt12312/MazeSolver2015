@@ -8,6 +8,7 @@ void Agent::reset()
 {
 	state = Agent::IDLE;
 	path.clear();
+	toDistinationPath.clear();
 	distIndexList.clear();
 
 	dist.x = 0;
@@ -134,11 +135,28 @@ void Agent::update(const IndexVec &cur, const Direction &cur_wall)
 
 
 	if (state == Agent::BACK_TO_START) {
+		if (toDistinationPath.empty()) {
+			//現在地点からスタートまでの最短経路を計算する
+			path.calcShortestDistancePath(cur, IndexVec(0,0), true);
+			toDistinationPath = path.getShortestDistancePath();
+			toDistinationPath_cnt = 0;
+		}
+
 		if (dist == cur) {
 			state = Agent::FINISHED;
 			nextDir = 0;
 
 			return;
+		}
+		else {
+			const IndexVec diff = toDistinationPath[toDistinationPath_cnt+1] - toDistinationPath[toDistinationPath_cnt];
+			for (int i=0;i<4;i++) {
+				if (diff == IndexVec::vecDir[i]) {
+					toDistinationPath_cnt++;
+					nextDir = Direction(0x01 << i);
+					return ;
+				}
+			}
 		}
 	}
 

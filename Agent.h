@@ -44,6 +44,12 @@ private:
 	//最短経路の計算をするやつ
 	ShortestPath path;
 
+	//目標地点への最短経路
+	//とりあえずはスタート地点に向かうときにだけつかう
+	Path toDistinationPath;
+	//上のpathの何番目
+	size_t toDistinationPath_cnt;
+
 	//足立法で次に進むべき方向を算出してくれる
 	Direction calcNextDirection(const IndexVec &cur, const IndexVec &dist);
 
