@@ -37,13 +37,15 @@ void test_ShortestPath(const char *filename)
 	//field.loadFromArray(mazeData_66test);
 
 	ShortestPath path(field);
+	for (int i=0;i<100000;i++) {
 	path.calcShortestDistancePath(IndexVec(0,0), MAZE_GOAL_LIST, false);
+	}
 	bool route[MAZE_SIZE][MAZE_SIZE] = {false};
 	for (auto index : path.getShortestDistancePath())
 	{
 		route[index.y][index.x] = true;
 	}
-	field.printWall(route);
+	//field.printWall(route);
 }
 
 void test_KShortestPath(const char *filename)
@@ -100,7 +102,7 @@ void test_Agent(const char *filename)
 	while(1) {
 		bool pos[MAZE_SIZE][MAZE_SIZE] = {false};
 		pos[cur.y][cur.x] = true;
-		//mazeInRobot.printWall(pos);
+		mazeInRobot.printWall(pos);
 
 		agent.update(cur, field.getWall(cur));
 		if (agent.getState() == Agent::FINISHED) break;
@@ -109,7 +111,7 @@ void test_Agent(const char *filename)
 		for (int i=0;i<4;i++) {
 			if (dir[i]) cur += IndexVec::vecDir[i];
 		}
-		//usleep(1000000/10);
+		usleep(1000000/10);
 	}
 
 	agent.caclRunSequence(true);

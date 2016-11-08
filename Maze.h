@@ -42,23 +42,21 @@ public:
 	inline bool isDoneAll() const { return (byte | 0x0f) == 0xff; }
 
 	//壁の数を数える
-	int nWall() const {
-		int cnt = 0;
-		if (bits.North) cnt++;
-		if (bits.East) cnt++;
-		if (bits.South) cnt++;
-		if (bits.West) cnt++;
-		return cnt;
+	inline int nWall() const {
+		uint8_t b = byte & 0x0f;
+		b = (b & 0x55) + (b >> 1 & 0x55);
+		b = (b & 0x33) + (b >> 2 & 0x33);
+		b = (b & 0x0f) + (b >> 4 & 0x0f);
+		return b;
 	}
 
 	//探索済みの壁を数える
-	int nDoneWall() const {
-		int cnt = 0;
-		if (bits.DoneNorth) cnt++;
-		if (bits.DoneEast) cnt++;
-		if (bits.DoneSouth) cnt++;
-		if (bits.DoneWest) cnt++;
-		return cnt;
+	inline int nDoneWall() const {
+		uint8_t b = (byte & 0xf0) >> 4;
+		b = (b & 0x55) + (b >> 1 & 0x55);
+		b = (b & 0x33) + (b >> 2 & 0x33);
+		b = (b & 0x0f) + (b >> 4 & 0x0f);
+		return b;
 	}
 };
 
@@ -170,6 +168,7 @@ public:
 
 	const Maze& operator=(const Maze &obj)
 	{
+		dirty = true;
 		for (int i=0;i<MAZE_SIZE;i++) {
 			for (int j=0;j<MAZE_SIZE;j++) {
 				wall[i][j] = obj.wall[i][j];
