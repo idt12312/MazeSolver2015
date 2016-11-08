@@ -102,7 +102,7 @@ void test_Agent(const char *filename)
 	while(1) {
 		bool pos[MAZE_SIZE][MAZE_SIZE] = {false};
 		pos[cur.y][cur.x] = true;
-		//mazeInRobot.printWall(pos);
+		mazeInRobot.printWall(pos);
 
 		agent.update(cur, field.getWall(cur));
 		if (agent.getState() == Agent::FINISHED) break;
@@ -111,7 +111,7 @@ void test_Agent(const char *filename)
 		for (int i=0;i<4;i++) {
 			if (dir[i]) cur += IndexVec::vecDir[i];
 		}
-		//usleep(1000000/10);
+		usleep(1000000/10);
 	}
 
 	agent.caclRunSequence(true);
@@ -133,8 +133,8 @@ int main(int argc, char **argv)
 
 	//test_Maze(argv[1]);
 	//test_Size();
-	//test_Agent(argv[1]);
-	test_ShortestPath(argv[1]);
+	test_Agent(argv[1]);
+	//test_ShortestPath(argv[1]);
 	//test_KShortestPath(argv[1]);
 	//test_ShortestPathInTime(argv[1]);
 
